@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+>
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_DEBUG" value="1"/>
+        <env name="APP_SECRET" value="s$cretf0rt3st"/>
+        <env name="SHELL_VERBOSITY" value="-1"/>
+        <!-- define your env variables for the test env here -->
+
+        <env name="APP_DEFAULT_USERNAME" value="admin"/>
+        <env name="APP_DEFAULT_PASSWORD" value="Password"/>
+        <env name="CORS_ALLOW_ORIGIN" value="^https?://localhost:?[0-9]*$"/>
+        <env name="DATABASE_URL" value="mysql://db_user_app:HCfxeueS8RnehyZM8qGxkuHDaBkeNRTs@127.0.0.1:3306/app"/>
+        <env name="JWT_PRIVATE_KEY_PATH" value="var/jwt/private.pem"/>
+        <env name="JWT_PUBLIC_KEY_PATH" value="var/jwt/public.pem"/>
+        <env name="JWT_PASSPHRASE" value="testing"/>
+
+    </php>
+
+    <testsuites>
+        <testsuite name="App Test Suite">
+            <directory>tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./src/</directory>
+        </whitelist>
+    </filter>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
+    </listeners>
+</phpunit>
