@@ -4,6 +4,7 @@ lexik_jwt_authentication:
     pass_phrase:      '%env(JWT_PASSPHRASE)%'
 
 gesdinet_jwt_refresh_token:
+    user_provider: app.user_provider
     refresh_token_entity: 'App\Entity\Security\JwtRefreshToken'
     ttl: 604800
     ttl_update: true

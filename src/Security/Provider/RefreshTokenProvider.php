@@ -64,11 +64,7 @@ class RefreshTokenProvider implements UserProviderInterface
             return $this->customUserProvider->loadUserByUsername($username);
         }
 
-        return new User(
-            $username,
-            null,
-            ['ROLE_USER']
-        );
+        return new User($username, null);
     }
 
     /**
