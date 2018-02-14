@@ -7,6 +7,7 @@ parameters:
     locale: 'en'
     app_default_username: '%env(resolve:APP_DEFAULT_USERNAME)%'
     app_default_password: '%env(resolve:APP_DEFAULT_PASSWORD)%'
+    gregdoak.cron.run_on_request: true
 
 services:
     # default configuration for services in *this* file

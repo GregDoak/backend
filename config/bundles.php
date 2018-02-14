@@ -16,4 +16,5 @@ return [
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
     Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],
     DataDog\AuditBundle\DataDogAuditBundle::class => ['all' => true],
+    GregDoak\CronBundle\GregDoakCronBundle::class => ['all' => true],
 ];
