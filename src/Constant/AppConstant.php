@@ -3,6 +3,7 @@
 namespace App\Constant;
 
 use App\Constant\Admin\AuditConstant;
+use App\Constant\Admin\CronConstant;
 use App\Constant\Admin\GroupConstant;
 use App\Constant\Admin\RoleConstant;
 use App\Constant\Admin\UserConstant;
@@ -60,6 +61,7 @@ class AppConstant
     {
         AuditConstant::loadConstants();
         AuthenticationConstant::loadConstants();
+        CronConstant::loadConstants();
         GroupConstant::loadConstants();
         PasswordConstant::loadConstants();
         ProfileConstant::loadConstants();
