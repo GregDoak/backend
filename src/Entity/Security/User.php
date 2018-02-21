@@ -61,6 +61,9 @@ class User implements UserInterface
      * @var string
      */
     protected $password;
+
+
+    protected $passwordLastChanged;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Person", cascade={"persist"})
      * @ORM\JoinColumn(name="person", referencedColumnName="id", nullable=true)
@@ -118,6 +121,7 @@ class User implements UserInterface
 
     public function __construct()
     {
+        $this->passwordLastChanged = new \DateTime();
         $this->createdOn = new \DateTime();
         $this->roles = new ArrayCollection();
     }
@@ -183,6 +187,25 @@ class User implements UserInterface
     public function setPassword($password): User
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPasswordLastChanged(): \DateTime
+    {
+        return $this->passwordLastChanged;
+    }
+
+    /**
+     * @param \DateTime $passwordLastChanged
+     * @return User
+     */
+    public function setPasswordLastChanged(\DateTime $passwordLastChanged): User
+    {
+        $this->passwordLastChanged = $passwordLastChanged;
 
         return $this;
     }
