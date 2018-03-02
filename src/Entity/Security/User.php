@@ -57,13 +57,15 @@ class User implements UserInterface
     protected $plainPassword;
     /**
      * @JMS\Exclude()
-     * @ORM\Column(type="string", length=1024)
+     * @ORM\Column(type="string", length=60)
      * @var string
      */
     protected $password;
-
-
-    protected $passwordLastChanged;
+    /**
+     * @ORM\Column(type="datetime")
+     * @var \DateTime
+     */
+    protected $passwordCreatedOn;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Person", cascade={"persist"})
      * @ORM\JoinColumn(name="person", referencedColumnName="id", nullable=true)
@@ -121,15 +123,15 @@ class User implements UserInterface
 
     public function __construct()
     {
-        $this->passwordLastChanged = new \DateTime();
         $this->createdOn = new \DateTime();
+        $this->passwordCreatedOn = new \DateTime();
         $this->roles = new ArrayCollection();
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -194,18 +196,17 @@ class User implements UserInterface
     /**
      * @return \DateTime
      */
-    public function getPasswordLastChanged(): \DateTime
+    public function getPasswordCreatedOn(): \DateTime
     {
-        return $this->passwordLastChanged;
+        return $this->passwordCreatedOn;
     }
 
     /**
-     * @param \DateTime $passwordLastChanged
      * @return User
      */
-    public function setPasswordLastChanged(\DateTime $passwordLastChanged): User
+    public function setPasswordCreatedOn(): User
     {
-        $this->passwordLastChanged = $passwordLastChanged;
+        $this->passwordCreatedOn = new \DateTime();
 
         return $this;
     }
@@ -443,6 +444,25 @@ class User implements UserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    /**
+     * @param int $passwordIntervalDays
+     * @return bool
+     * @throws \Exception
+     */
+    public function isExpired(int $passwordIntervalDays): bool
+    {
+        $expired = false;
+        if ($passwordIntervalDays > 0) {
+            $interval = new \DateInterval(sprintf('P%dD', $passwordIntervalDays));
+            $passwordExpiry = $this->getPasswordCreatedOn()->add($interval);
+            if ($passwordExpiry < new \DateTime()) {
+                $expired = true;
+            }
+        }
+
+        return $expired;
     }
 
 }

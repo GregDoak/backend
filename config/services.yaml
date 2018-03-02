@@ -5,10 +5,11 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    app_default_username: '%env(resolve:APP_DEFAULT_USERNAME)%'
-    app_default_password: '%env(resolve:APP_DEFAULT_PASSWORD)%'
     gregdoak.cron.run_on_request: true
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
+    app.defaults.username: '%env(resolve:APP_DEFAULT_USERNAME)%'
+    app.defaults.password: '%env(resolve:APP_DEFAULT_PASSWORD)%'
+    app.password.interval_days: 95
 
 services:
     # default configuration for services in *this* file
@@ -46,9 +47,14 @@ services:
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
 
+    app.event.exception_listener:
+        class: 'App\EventListener\ExceptionListener'
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException}
+
     app.event.jwt_created_listener:
         class: 'App\EventListener\JWTCreatedListener'
-        arguments: [ '@request_stack', '@doctrine.orm.entity_manager' ]
+        arguments: [ '@request_stack', '%app.password.interval_days%' ]
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
 

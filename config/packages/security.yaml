@@ -12,10 +12,6 @@ security:
         ROLE_SUPER_ADMIN: ROLE_ADMIN
 
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-
         login:
             pattern:  ^/api/authentication/login
             stateless: true
@@ -44,4 +40,4 @@ security:
     access_control:
         - { path: ^/api/authentication/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/authentication/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }

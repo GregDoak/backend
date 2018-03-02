@@ -64,23 +64,23 @@ class ExceptionController extends FOSRestController
                 $message = $exception->getMessage();
                 $messages = [];
                 break;
-            case $exception instanceof NotFoundHttpException:
-                $code = Response::HTTP_NOT_FOUND;
-                $message = AppConstant::HTTP_NOT_FOUND;
-                $messages = [];
-                break;
             case $exception instanceof MethodNotAllowedHttpException:
                 $code = Response::HTTP_METHOD_NOT_ALLOWED;
                 $message = AppConstant::HTTP_METHOD_NOT_ALLOWED;
                 $messages = [];
                 break;
+            case $exception instanceof NotFoundHttpException:
+                $code = Response::HTTP_NOT_FOUND;
+                $message = AppConstant::HTTP_NOT_FOUND;
+                $messages = [];
+                break;
             case $exception instanceof ORMException:
-                $code = 500;
+                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
                 $message = AppConstant::ORM_EXCEPTION;
                 $messages = [];
                 break;
             default:
-                $code = 500;
+                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
                 $message = AppConstant::DEFAULT_EXCEPTION;
                 $messages = [];
         }

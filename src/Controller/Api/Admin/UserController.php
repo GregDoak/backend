@@ -157,6 +157,7 @@ class UserController extends ApiController
         try {
             $user
                 ->setUsername($request->get('username'))
+                ->setPlainPassword($user->getPassword())
                 ->setUpdatedBy($this->authenticatedUser)
                 ->setUpdatedOn()
                 ->clearRoles();

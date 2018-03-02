@@ -18,10 +18,11 @@ use App\Constant\Security\AuthenticationConstant;
  */
 class AppConstant
 {
+    public const DEFAULT_EXCEPTION = 'An unknown error has occurred. Please try again.';
     public const HTTP_NOT_FOUND = 'Page not found';
     public const HTTP_METHOD_NOT_ALLOWED = 'This method is not allowed on this page.';
-    public const ORM_EXCEPTION = 'There was a problem saving to the database.  Please try again later.';
-    public const DEFAULT_EXCEPTION = 'An unknown error has occurred. Please try again.';
+    public const NOT_LOGGED_IN = 'You are not currently logged in.  Please login in and try again.';
+    public const ORM_EXCEPTION = 'There was a problem connecting to the database.  Please try again later.';
 
     /**
      * @param string $message

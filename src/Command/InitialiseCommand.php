@@ -97,8 +97,8 @@ class InitialiseCommand extends ContainerAwareCommand
                 'roles' => ['ROLE_ADMIN'],
             ],
             [
-                'username' => $this->getContainer()->getParameter('app_default_username'),
-                'password' => $this->getContainer()->getParameter('app_default_password'),
+                'username' => $this->getContainer()->getParameter('app.defaults.username'),
+                'password' => $this->getContainer()->getParameter('app.defaults.password'),
                 'roles' => ['ROLE_SUPER_ADMIN'],
             ],
         ];

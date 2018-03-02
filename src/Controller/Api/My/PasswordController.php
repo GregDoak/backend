@@ -39,11 +39,15 @@ class PasswordController extends ApiController
                 $this->authenticatedUser,
                 $request->get('currentPassword')
             )) {
-                $this->setEntityError('Your current password is incorrect.');
+                $this->setEntityError(PasswordConstant::UPDATE_PASSWORD_INCORRECT);
             }
 
             if ($request->get('password') !== $request->get('confirmPassword')) {
-                $this->setEntityError('Your new passwords do not match.');
+                $this->setEntityError(PasswordConstant::UPDATE_PASSWORD_NOT_MATCHING);
+            }
+
+            if ($request->get('currentPassword') === $request->get('password')) {
+                $this->setEntityError(PasswordConstant::UPDATE_PASSWORD_MATCHING);
             }
 
             $this->authenticatedUser->setPlainPassword($request->get('password'));
@@ -53,7 +57,11 @@ class PasswordController extends ApiController
                 $this->authenticatedUser,
                 $this->authenticatedUser->getPlainPassword()
             );
-            $this->authenticatedUser->setPassword($password);
+
+            $this->authenticatedUser
+                ->setPassword($password)
+                ->setPasswordCreatedOn()
+                ->setUpdatedBy($this->authenticatedUser);
 
             $this->entityManager->persist($this->authenticatedUser);
             $this->entityManager->flush();
