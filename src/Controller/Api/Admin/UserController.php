@@ -98,6 +98,7 @@ class UserController extends ApiController
                 ->setPlainPassword($request->get('password'))
                 ->setLoginCount()
                 ->setEnabled(true)
+                ->setExpired(true)
                 ->setCreatedBy($this->authenticatedUser);
 
             UserHelper::setGroups($user, (array)$request->get('groups'), $this->entityManager);

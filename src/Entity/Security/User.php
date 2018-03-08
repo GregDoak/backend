@@ -44,6 +44,7 @@ class User implements UserInterface
      */
     protected $username;
     /**
+     * @JMS\Exclude()
      * @Assert\NotNull(message=USER_PASSWORD_EMPTY_ERROR)
      * @Assert\NotBlank(message=USER_PASSWORD_EMPTY_ERROR)
      * @Assert\Length(
@@ -62,6 +63,7 @@ class User implements UserInterface
      */
     protected $password;
     /**
+     * @JMS\Exclude()
      * @ORM\Column(type="datetime")
      * @var \DateTime
      */
@@ -82,6 +84,11 @@ class User implements UserInterface
      * @var integer
      */
     protected $loginCount;
+    /**
+     * @ORM\Column(type="boolean")
+     * @var boolean
+     */
+    protected $expired;
     /**
      * @ORM\Column(type="boolean")
      * @var boolean
@@ -124,6 +131,7 @@ class User implements UserInterface
     public function __construct()
     {
         $this->createdOn = new \DateTime();
+        $this->expired = false;
         $this->passwordCreatedOn = new \DateTime();
         $this->roles = new ArrayCollection();
     }
@@ -294,6 +302,44 @@ class User implements UserInterface
     }
 
     /**
+     * @return bool
+     */
+    public function getExpired(): bool
+    {
+        return $this->expired;
+    }
+
+    /**
+     * @param int $passwordIntervalDays
+     * @return bool
+     * @throws \Exception
+     */
+    public function isExpired(int $passwordIntervalDays): bool
+    {
+        $expired = $this->expired;
+        if ($expired === false && $passwordIntervalDays > 0) {
+            $interval = new \DateInterval(sprintf('P%dD', $passwordIntervalDays));
+            $passwordExpiry = $this->getPasswordCreatedOn()->add($interval);
+            if ($passwordExpiry < new \DateTime()) {
+                $expired = true;
+            }
+        }
+
+        return $expired;
+    }
+
+    /**
+     * @param bool $expired
+     * @return User
+     */
+    public function setExpired(bool $expired): User
+    {
+        $this->expired = $expired;
+
+        return $this;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getCreatedOn(): \DateTime
@@ -445,24 +491,4 @@ class User implements UserInterface
     public function eraseCredentials(): void
     {
     }
-
-    /**
-     * @param int $passwordIntervalDays
-     * @return bool
-     * @throws \Exception
-     */
-    public function isExpired(int $passwordIntervalDays): bool
-    {
-        $expired = false;
-        if ($passwordIntervalDays > 0) {
-            $interval = new \DateInterval(sprintf('P%dD', $passwordIntervalDays));
-            $passwordExpiry = $this->getPasswordCreatedOn()->add($interval);
-            if ($passwordExpiry < new \DateTime()) {
-                $expired = true;
-            }
-        }
-
-        return $expired;
-    }
-
 }

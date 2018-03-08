@@ -30,15 +30,13 @@ class PasswordController extends ApiController
      */
     public function updatePassword(Request $request): View
     {
+        $encoder = $this->get('security.password_encoder');
         $this->authenticatedUser = $this->getUser();
         $this->entityManager = $this->get('doctrine.orm.entity_manager');
 
         try {
 
-            if ( ! $this->get('security.password_encoder')->isPasswordValid(
-                $this->authenticatedUser,
-                $request->get('currentPassword')
-            )) {
+            if ( ! $encoder->isPasswordValid($this->authenticatedUser, $request->get('currentPassword'))) {
                 $this->setEntityError(PasswordConstant::UPDATE_PASSWORD_INCORRECT);
             }
 
@@ -61,6 +59,7 @@ class PasswordController extends ApiController
             $this->authenticatedUser
                 ->setPassword($password)
                 ->setPasswordCreatedOn()
+                ->setExpired(false)
                 ->setUpdatedBy($this->authenticatedUser);
 
             $this->entityManager->persist($this->authenticatedUser);
