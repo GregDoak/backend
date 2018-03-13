@@ -21,6 +21,28 @@ class CronController extends ApiController
     private $entityManager;
 
     /**
+     * @Rest\Get("/admin/cron-jobs.{_format}", defaults={"_format"="json"})
+     * @Security("has_role('ROLE_ADMIN')", message=CRON_GET_CRON_JOBS_SECURITY_ERROR)
+     * @throws \LogicException
+     * @return View
+     */
+    public function getCronJobs(): View
+    {
+        $this->authenticatedUser = $this->getUser();
+        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $cronJobRepository = $this->entityManager->getRepository('GregDoakCronBundle:CronJob');
+
+        // $cronJobs = $cronJobRepository->getCronJobHistory();
+        $cronJobs = $cronJobRepository->findAll();
+
+        $data = ResponseHelper::buildSuccessResponse(200, $cronJobs);
+
+        ResponseHelper::logResponse(CronConstant::GET_MULTIPLE_SUCCESS_MESSAGE, $data, $this);
+
+        return $this->view($data, $data['code']);
+    }
+
+    /**
      * @Rest\Get("/admin/cron-job-tasks.{_format}", defaults={"_format"="json"})
      * @Security("has_role('ROLE_ADMIN')", message=CRON_GET_CRON_JOB_TASKS_SECURITY_ERROR)
      * @throws \LogicException
@@ -36,7 +58,7 @@ class CronController extends ApiController
 
         $data = ResponseHelper::buildSuccessResponse(200, $cronJobTasks);
 
-        ResponseHelper::logResponse(CronConstant::GET_MULTIPLE_SUCCESS_MESSAGE, $data, $this);
+        ResponseHelper::logResponse(CronConstant::GET_MULTIPLE_TASKS_SUCCESS_MESSAGE, $data, $this);
 
         return $this->view($data, $data['code']);
     }
@@ -57,7 +79,7 @@ class CronController extends ApiController
         $data = ResponseHelper::buildSuccessResponse(200, $cronJobTask);
 
         ResponseHelper::logResponse(
-            sprintf(CronConstant::GET_SINGLE_SUCCESS_MESSAGE, $cronJobTask->getCommand()),
+            sprintf(CronConstant::GET_SINGLE_TASK_SUCCESS_MESSAGE, $cronJobTask->getCommand()),
             $data,
             $this
         );

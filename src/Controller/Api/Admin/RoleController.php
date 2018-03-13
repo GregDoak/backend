@@ -88,7 +88,7 @@ class RoleController extends ApiController
         try {
             $role = new Role();
             $role
-                ->setTitle($request->get('title'))
+                ->setTitle(strtoupper($request->get('title')))
                 ->setDescription($request->get('description'))
                 ->setCreatedBy($this->authenticatedUser);
 

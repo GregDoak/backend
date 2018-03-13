@@ -44,7 +44,10 @@ class AuditController extends ApiController
                     'action' => $auditLog->getAction(),
                     'table' => $auditLog->getTbl(),
                     'source' => AuditHelper::getEntity($this->entityManager, $auditLog->getSource()),
-                    'updatedBy' => AuditHelper::getEntity($this->entityManager, $auditLog->getBlame()),
+                    'updatedBy' => $auditLog->getBlame() !== null ? AuditHelper::getEntity(
+                        $this->entityManager,
+                        $auditLog->getBlame()
+                    ) : null,
                     'changes' => $auditLog->getDiff(),
                     'updatedOn' => $auditLog->getLoggedAt(),
                 ];

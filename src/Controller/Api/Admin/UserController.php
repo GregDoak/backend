@@ -160,10 +160,9 @@ class UserController extends ApiController
                 ->setUsername($request->get('username'))
                 ->setPlainPassword($user->getPassword())
                 ->setUpdatedBy($this->authenticatedUser)
-                ->setUpdatedOn()
-                ->clearRoles();
+                ->setUpdatedOn();
 
-            UserHelper::setGroups($user, (array)$request->get('groups'), $this->entityManager);
+            // UserHelper::setGroups($user, (array)$request->get('groups'), $this->entityManager);
             UserHelper::setRoles($user, (array)$request->get('roles'), $this->entityManager);
 
             $this->validateEntity($user, UserConstant::UPDATE_VALIDATION_ERROR);

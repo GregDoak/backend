@@ -12,13 +12,15 @@ class CronConstant
 {
 
     //Constants for Annotations in App\Controller\Api\Admin\CronController
-    public const GET_CRON_JOB_TASKS_SECURITY_ERROR = 'You do not access to view the cron job tasks.';
-    public const GET_CRON_JOB_TASK_SECURITY_ERROR = 'You do not access to view this cron job task.';
-    public const CREATE_CRON_JOB_TASK_SECURITY_ERROR = 'You do not access to create a cron job task.';
+    public const GET_CRON_JOBS_SECURITY_ERROR = 'You do not have access to view the cron jobs.';
+    public const GET_CRON_JOB_TASKS_SECURITY_ERROR = 'You do not have access to view the cron job tasks.';
+    public const GET_CRON_JOB_TASK_SECURITY_ERROR = 'You do not have access to view this cron job task.';
+    public const CREATE_CRON_JOB_TASK_SECURITY_ERROR = 'You do not have access to create a cron job task.';
 
     //Constants for Messages in App\Controller\Api\Admin\CronController
-    public const GET_MULTIPLE_SUCCESS_MESSAGE = 'User received a list of cron tasks.';
-    public const GET_SINGLE_SUCCESS_MESSAGE = 'User received a the details of %s.';
+    public const GET_MULTIPLE_SUCCESS_MESSAGE = 'User received a list a list of cron jobs.';
+    public const GET_MULTIPLE_TASKS_SUCCESS_MESSAGE = 'User received a list of cron tasks.';
+    public const GET_SINGLE_TASK_SUCCESS_MESSAGE = 'User received a the details of %s.';
     public const CREATE_VALIDATION_ERROR = 'Sorry, unable to create the cron job task, please note the errors below:';
     public const CREATE_SUCCESS_MESSAGE = 'Successfully created %s.';
     public const CREATE_SUCCESS_LOG = 'User created a cron job task with the command of %s.';
@@ -35,6 +37,7 @@ class CronConstant
     public static function loadConstants(): void
     {
         //Constants for Annotations in App\Controller\Api\Admin\GroupController
+        AppConstant::defineConstant('CRON_GET_CRON_JOBS_SECURITY_ERROR', self::GET_CRON_JOBS_SECURITY_ERROR);
         AppConstant::defineConstant('CRON_GET_CRON_JOB_TASKS_SECURITY_ERROR', self::GET_CRON_JOB_TASKS_SECURITY_ERROR);
         AppConstant::defineConstant('CRON_GET_CRON_JOB_TASK_SECURITY_ERROR', self::GET_CRON_JOB_TASK_SECURITY_ERROR);
         AppConstant::defineConstant(
