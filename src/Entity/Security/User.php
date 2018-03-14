@@ -119,10 +119,19 @@ class User implements UserInterface
      */
     protected $updatedBy;
     /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Security\Group", cascade={"persist"})
+     * @ORM\JoinTable(name="users_groups",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
+     * )
+     * @var ArrayCollection
+     */
+    protected $groups;
+    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Security\Role", cascade={"persist"})
      * @ORM\JoinTable(name="users_roles",
-     *      joinColumns={@ORM\JoinColumn(name="user", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="role", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
      * )
      * @var ArrayCollection
      */
@@ -133,6 +142,7 @@ class User implements UserInterface
         $this->createdOn = new \DateTime();
         $this->expired = false;
         $this->passwordCreatedOn = new \DateTime();
+        $this->groups = new ArrayCollection();
         $this->roles = new ArrayCollection();
     }
 
@@ -393,6 +403,50 @@ class User implements UserInterface
         $this->updatedOn = new \DateTime();
 
         return $this;
+    }
+
+    /**
+     * @param Group $group
+     * @return User
+     */
+    public function setGroup(Group $group): User
+    {
+        if ( ! $this->groups->contains($group)) {
+            $this->groups[] = $group;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function clearGroups(): User
+    {
+        $this->groups->clear();
+
+        return $this;
+    }
+
+    /**
+     * @param Group $group
+     * @return User
+     */
+    public function removeGroup(Group $group): User
+    {
+        if ($this->groups->contains($group)) {
+            $this->groups->remove($group);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection|PersistentCollection
+     */
+    public function getGroups(): ArrayCollection
+    {
+        return $this->groups;
     }
 
     /**

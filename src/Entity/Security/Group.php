@@ -4,6 +4,7 @@ namespace App\Entity\Security;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -155,9 +156,9 @@ class Group
     }
 
     /**
-     * @return ArrayCollection
+     * @return ArrayCollection|PersistentCollection
      */
-    public function getRolesCollection(): ArrayCollection
+    public function getRolesCollection()
     {
         return $this->roles;
     }

@@ -5,6 +5,7 @@ namespace App\Controller\Api\Admin;
 use App\Constant\Admin\GroupConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\Group;
+use App\Helper\GroupHelper;
 use App\Helper\ResponseHelper;
 use App\Repository\Security\GroupRepository;
 use Doctrine\ORM\EntityManager;
@@ -96,6 +97,8 @@ class GroupController extends ApiController
                 ->setDescription($request->get('description'))
                 ->setCreatedBy($this->authenticatedUser);
 
+            GroupHelper::setRoles($group, (array)$request->get('roles'), $this->entityManager);
+
             $this->validateEntity($group, GroupConstant::CREATE_VALIDATION_ERROR);
 
             $this->entityManager->persist($group);
@@ -148,10 +151,13 @@ class GroupController extends ApiController
 
         try {
             $group
-                ->setTitle($request->get('title'))
+                ->setTitle(strtoupper($request->get('title')))
                 ->setDescription($request->get('description'))
                 ->setUpdatedBy($this->authenticatedUser)
-                ->setUpdatedOn();
+                ->setUpdatedOn()
+                ->clearRoles();
+
+            GroupHelper::setRoles($group, (array)$request->get('roles'), $this->entityManager);
 
             $this->validateEntity($group, GroupConstant::UPDATE_VALIDATION_ERROR);
 

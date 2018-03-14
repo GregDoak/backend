@@ -31,6 +31,7 @@ class UserHelper
                     }
                 }
             }
+            $user->setGroup($group);
         }
         $roleIds = array_unique($roleIds);
         self::setRoles($user, $roleIds, $entityManager);
