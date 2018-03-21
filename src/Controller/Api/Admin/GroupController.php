@@ -154,8 +154,7 @@ class GroupController extends ApiController
                 ->setTitle(strtoupper($request->get('title')))
                 ->setDescription($request->get('description'))
                 ->setUpdatedBy($this->authenticatedUser)
-                ->setUpdatedOn()
-                ->clearRoles();
+                ->setUpdatedOn();
 
             GroupHelper::setRoles($group, (array)$request->get('roles'), $this->entityManager);
 

@@ -131,7 +131,7 @@ class CronController extends ApiController
             $cronJobTask = new CronJobTask();
             $cronJobTask
                 ->setCommand($request->get('command'))
-                ->setStartDate(new \DateTime())
+                ->setStartDate($startDate)
                 ->setIntervalPeriod($intervalPeriod)
                 ->setIntervalContext($intervalContext)
                 ->setPriority($priority)

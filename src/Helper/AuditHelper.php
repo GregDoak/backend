@@ -12,6 +12,21 @@ use Doctrine\ORM\EntityManager;
 class AuditHelper
 {
     /**
+     * @param string $action
+     * @return string
+     */
+    public static function getAction(string $action): string
+    {
+        if ($action === 'insert') {
+            $action .= 'ed';
+        } else {
+            $action .= 'd';
+        }
+
+        return $action;
+    }
+
+    /**
      * @param EntityManager $entityManager
      * @param Association $association
      * @return array
