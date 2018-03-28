@@ -13,9 +13,11 @@ class CronConstant
 
     //Constants for Annotations in App\Controller\Api\Admin\CronController
     public const GET_CRON_JOBS_SECURITY_ERROR = 'You do not have access to view the cron jobs.';
+    public const GET_CRON_JOB_SECURITY_ERROR = 'You do not have access to view this cron job.';
     public const GET_CRON_JOB_TASKS_SECURITY_ERROR = 'You do not have access to view the cron job tasks.';
     public const GET_CRON_JOB_TASK_SECURITY_ERROR = 'You do not have access to view this cron job task.';
     public const CREATE_CRON_JOB_TASK_SECURITY_ERROR = 'You do not have access to create a cron job task.';
+    public const UPDATE_CRON_JOB_TASK_SECURITY_ERROR = 'You do not have access to update this cron job task.';
 
     //Constants for Messages in App\Controller\Api\Admin\CronController
     public const GET_MULTIPLE_SUCCESS_MESSAGE = 'User received a list a list of cron jobs.';
@@ -25,6 +27,10 @@ class CronConstant
     public const CREATE_SUCCESS_MESSAGE = 'Successfully created %s.';
     public const CREATE_SUCCESS_LOG = 'User created a cron job task with the command of %s.';
     public const CREATE_ERROR_LOG = 'User failed to create a new cron job task.';
+    public const UPDATE_VALIDATION_ERROR = 'Sorry, unable to update this cron job task, please note the errors below:';
+    public const UPDATE_SUCCESS_MESSAGE = 'Successfully updated %s.';
+    public const UPDATE_SUCCESS_LOG = 'User updated a cron job task with the command of %s.';
+    public const UPDATE_ERROR_LOG = 'User failed to update cron job task %s.';
 
     //Constants for validation fields in App\Controller\Api\Admin\CronController
     public const START_DATE_VALIDATION = 'The start date is in the incorrect format (YYYY-MM-DD HH:MM:SS).';
@@ -38,11 +44,16 @@ class CronConstant
     {
         //Constants for Annotations in App\Controller\Api\Admin\GroupController
         AppConstant::defineConstant('CRON_GET_CRON_JOBS_SECURITY_ERROR', self::GET_CRON_JOBS_SECURITY_ERROR);
+        AppConstant::defineConstant('CRON_GET_CRON_JOB_SECURITY_ERROR', self::GET_CRON_JOB_SECURITY_ERROR);
         AppConstant::defineConstant('CRON_GET_CRON_JOB_TASKS_SECURITY_ERROR', self::GET_CRON_JOB_TASKS_SECURITY_ERROR);
         AppConstant::defineConstant('CRON_GET_CRON_JOB_TASK_SECURITY_ERROR', self::GET_CRON_JOB_TASK_SECURITY_ERROR);
         AppConstant::defineConstant(
             'CRON_CREATE_CRON_JOB_TASK_SECURITY_ERROR',
             self::CREATE_CRON_JOB_TASK_SECURITY_ERROR
+        );
+        AppConstant::defineConstant(
+            'CRON_UPDATE_CRON_JOB_TASK_SECURITY_ERROR',
+            self::UPDATE_CRON_JOB_TASK_SECURITY_ERROR
         );
     }
 }

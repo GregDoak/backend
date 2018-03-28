@@ -10,6 +10,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use GregDoak\CronBundle\Entity\CronJob;
 use GregDoak\CronBundle\Entity\CronJobTask;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -32,12 +33,35 @@ class CronController extends ApiController
         $this->entityManager = $this->get('doctrine.orm.entity_manager');
         $cronJobRepository = $this->entityManager->getRepository('GregDoakCronBundle:CronJob');
 
-        // $cronJobs = $cronJobRepository->getCronJobHistory();
-        $cronJobs = $cronJobRepository->findAll();
+        $cronJobs = $cronJobRepository->getCronJobHistory();
 
         $data = ResponseHelper::buildSuccessResponse(200, $cronJobs);
 
         ResponseHelper::logResponse(CronConstant::GET_MULTIPLE_SUCCESS_MESSAGE, $data, $this);
+
+        return $this->view($data, $data['code']);
+    }
+
+    /**
+     * @Rest\Get("/admin/cron-job/{id}.{_format}", defaults={"_format"="json"})
+     * @Security("has_role('ROLE_ADMIN')",message=CRON_GET_CRON_JOB_SECURITY_ERROR)
+     * @ParamConverter("cronJob", class="GregDoak\CronBundle\Entity\CronJob", options={"id" = "id"})
+     * @param CronJob $cronJob
+     * @throws \LogicException
+     * @return View
+     */
+    public function getCronJob(CronJob $cronJob): View
+    {
+        $this->authenticatedUser = $this->getUser();
+        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+
+        $data = ResponseHelper::buildSuccessResponse(200, $cronJob);
+
+        ResponseHelper::logResponse(
+            sprintf(CronConstant::GET_SINGLE_TASK_SUCCESS_MESSAGE, $cronJob->getId()),
+            $data,
+            $this
+        );
 
         return $this->view($data, $data['code']);
     }
@@ -54,7 +78,7 @@ class CronController extends ApiController
         $this->entityManager = $this->get('doctrine.orm.entity_manager');
         $cronJobTaskRepository = $this->entityManager->getRepository('GregDoakCronBundle:CronJobTask');
 
-        $cronJobTasks = $cronJobTaskRepository->getActiveTasks();
+        $cronJobTasks = $cronJobTaskRepository->findAll();
 
         $data = ResponseHelper::buildSuccessResponse(200, $cronJobTasks);
 
@@ -164,6 +188,88 @@ class CronController extends ApiController
             );
 
             ResponseHelper::logResponse(CronConstant::CREATE_ERROR_LOG, $data, $this);
+        }
+
+        return $this->view($data, $data['code']);
+    }
+
+    /**
+     * @Rest\Put("/admin/cron-job-task/{id}.{_format}", defaults={"_format"="json"})
+     * @Security("has_role('ROLE_ADMIN')", message=CRON_UPDATE_CRON_JOB_TASK_SECURITY_ERROR)
+     * @ParamConverter("cronJobTask", class="GregDoak\CronBundle\Entity\CronJobTask", options={"id" = "id"})
+     * @param Request $request
+     * @param CronJobTask $cronJobTask
+     * @throws \LogicException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @return View
+     */
+    public function updateCronJobTask(Request $request, CronJobTask $cronJobTask): View
+    {
+        $this->authenticatedUser = $this->getUser();
+        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $sourceCronJobTask = clone $cronJobTask;
+
+        try {
+            $intervalPeriod = (int)$request->get('intervalPeriod');
+            $intervalContext = $request->get('intervalContext');
+            $priority = (int)$request->get('priority');
+
+            if ($intervalPeriod < 1) {
+                throw new \UnexpectedValueException(CronConstant::INTERVAL_PERIOD_VALIDATION, 400);
+            }
+
+            if ( ! in_array($intervalContext, CronConstant::INTERVAL_CONTEXT_OPTIONS)) {
+                throw new \UnexpectedValueException(
+                    sprintf(
+                        CronConstant::INTERVAL_CONTEXT_VALIDATION,
+                        implode(', ', CronConstant::INTERVAL_CONTEXT_OPTIONS)
+                    ), 400
+                );
+            }
+
+            if ($priority < 1 || $priority > 10) {
+                throw new \UnexpectedValueException(CronConstant::PRIORITY_VALIDATION, 400);
+            }
+
+            $cronJobTask
+                ->setCommand($request->get('command'))
+                ->setIntervalPeriod($intervalPeriod)
+                ->setIntervalContext($intervalContext)
+                ->setPriority($priority)
+                ->setActive(($request->get('active', true)));
+
+            $this->validateEntity($cronJobTask, CronConstant::UPDATE_VALIDATION_ERROR);
+
+            $this->entityManager->persist($cronJobTask);
+            $this->entityManager->flush();
+
+            $data = ResponseHelper::buildMessageResponse(
+                'success',
+                sprintf(CronConstant::UPDATE_SUCCESS_MESSAGE, $sourceCronJobTask->getCommand())
+            );
+
+            $data = ResponseHelper::buildSuccessResponse(201, $data);
+
+            ResponseHelper::logResponse(
+                sprintf(CronConstant::UPDATE_SUCCESS_LOG, $sourceCronJobTask->getCommand()),
+                $data,
+                $this
+            );
+
+        } catch (\UnexpectedValueException $exception) {
+
+            $data = ResponseHelper::buildErrorResponse(
+                $exception->getCode(),
+                $exception->getMessage(),
+                $this->getEntityErrors()
+            );
+
+            ResponseHelper::logResponse(
+                sprintf(CronConstant::UPDATE_ERROR_LOG, $sourceCronJobTask->getCommand()),
+                $data,
+                $this
+            );
         }
 
         return $this->view($data, $data['code']);
