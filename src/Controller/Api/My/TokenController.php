@@ -42,6 +42,8 @@ class TokenController extends ApiController
     /**
      * @Rest\Delete("/my/tokens.{_format}", defaults={"_format"="json"})
      * @Security("has_role('ROLE_USER')", message=TOKEN_DELETE_TOKENS_SECURITY_ERROR)
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
      * @return View
      */
     public function deleteTokens(): View
@@ -51,11 +53,12 @@ class TokenController extends ApiController
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder
-            ->delete('Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken', 't')
+            ->delete('App\Entity\Security\JwtRefreshToken', 't')
             ->where('t.username = :username')
             ->setParameter(':username', $this->authenticatedUser->getUsername());
 
         $queryBuilder->getQuery()->execute();
+        $this->entityManager->flush();
 
         $data = ResponseHelper::buildMessageResponse('success', TokenConstant::DELETE_TOKENS_SUCCESS_MESSAGE);
 
