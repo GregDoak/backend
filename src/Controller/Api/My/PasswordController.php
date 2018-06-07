@@ -2,6 +2,9 @@
 
 namespace App\Controller\Api\My;
 
+use App\Constant\AppConstant;
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Constant\My\PasswordConstant;
 use App\Controller\Api\ApiController;
 use App\Helper\ResponseHelper;
@@ -32,23 +35,24 @@ class PasswordController extends ApiController
     {
         $encoder = $this->get('security.password_encoder');
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         try {
 
-            if ( ! $encoder->isPasswordValid($this->authenticatedUser, $request->get('currentPassword'))) {
+            if ( ! $encoder->isPasswordValid($this->authenticatedUser,
+                $request->get(LabelConstant::CURRENT_PASSWORD))) {
                 $this->setEntityError(PasswordConstant::UPDATE_PASSWORD_INCORRECT);
             }
 
-            if ($request->get('password') !== $request->get('confirmPassword')) {
+            if ($request->get(LabelConstant::PASSWORD) !== $request->get(LabelConstant::CONFIRM_PASSWORD)) {
                 $this->setEntityError(PasswordConstant::UPDATE_PASSWORD_NOT_MATCHING);
             }
 
-            if ($request->get('currentPassword') === $request->get('password')) {
+            if ($request->get(LabelConstant::CURRENT_PASSWORD) === $request->get(LabelConstant::PASSWORD)) {
                 $this->setEntityError(PasswordConstant::UPDATE_PASSWORD_MATCHING);
             }
 
-            $this->authenticatedUser->setPlainPassword($request->get('password'));
+            $this->authenticatedUser->setPlainPassword($request->get(LabelConstant::PASSWORD));
 
             $this->validateEntity($this->authenticatedUser, PasswordConstant::UPDATE_PASSWORD_VALIDATION_MESSAGE);
             $password = $this->get('security.password_encoder')->encodePassword(
@@ -66,7 +70,7 @@ class PasswordController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 PasswordConstant::UPDATE_PASSWORD_SUCCESS_MESSAGE
             );
 

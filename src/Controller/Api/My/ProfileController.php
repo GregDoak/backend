@@ -8,7 +8,6 @@ use App\Helper\ResponseHelper;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use UAParser\Parser;
 
 /**
  * Class ProfileController

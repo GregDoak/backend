@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Entity\Lookup\Gender;
 use App\Entity\Lookup\Title;
 use App\Entity\Security\Role;
@@ -9,7 +11,6 @@ use App\Entity\Security\User;
 use App\Helper\ConsoleHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,8 +27,7 @@ class InitialiseCommand extends ContainerAwareCommand
     private $entityManager;
     /** @var UserPasswordEncoderInterface $encoder */
     private $encoder;
-    /** @var OutputInterface $output */
-    private $output;
+    public const SYSTEM_USERNAME = 'system';
 
     /**
      * InitialiseCommand constructor.
@@ -92,27 +92,27 @@ class InitialiseCommand extends ContainerAwareCommand
         $created = 0;
         $records = [
             [
-                'username' => 'system',
-                'password' => \random_bytes(20),
-                'roles' => ['ROLE_ADMIN'],
+                LabelConstant::USERNAME => $this->getContainer()->getParameter('app.defaults.system_username'),
+                LabelConstant::PASSWORD => \random_bytes(20),
+                LabelConstant::ROLES => ['ROLE_ADMIN'],
             ],
             [
-                'username' => $this->getContainer()->getParameter('app.defaults.username'),
-                'password' => $this->getContainer()->getParameter('app.defaults.password'),
-                'roles' => ['ROLE_SUPER_ADMIN'],
+                LabelConstant::USERNAME => $this->getContainer()->getParameter('app.defaults.username'),
+                LabelConstant::PASSWORD => $this->getContainer()->getParameter('app.defaults.password'),
+                LabelConstant::ROLES => ['ROLE_SUPER_ADMIN'],
             ],
         ];
 
-        $userRepository = $this->entityManager->getRepository('App:Security\User');
-        $roleRepository = $this->entityManager->getRepository('App:Security\Role');
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
+        $roleRepository = $this->entityManager->getRepository(EntityConstant::ROLE);
 
         foreach ($records as $record) {
-            $user = $userRepository->findOneBy(['username' => $record['username']]);
+            $user = $userRepository->findOneBy([LabelConstant::USERNAME => $record[LabelConstant::USERNAME]]);
             if ($user === null) {
                 $user = new User();
-                $plainPassword = $record['password'];
+                $plainPassword = $record[LabelConstant::PASSWORD];
                 $user
-                    ->setUsername($record['username'])
+                    ->setUsername($record[LabelConstant::USERNAME])
                     ->setPassword($this->encoder->encodePassword($user, $plainPassword))
                     ->setLoginCount()
                     ->setEnabled(true);
@@ -126,8 +126,8 @@ class InitialiseCommand extends ContainerAwareCommand
                 $this->initialiseRoles($user);
             }
 
-            foreach ((array)$record['roles'] as $roleTitle) {
-                $role = $roleRepository->findOneBy(['title' => $roleTitle]);
+            foreach ((array)$record[LabelConstant::ROLES] as $roleTitle) {
+                $role = $roleRepository->findOneBy([LabelConstant::TITLE => $roleTitle]);
                 if ($role instanceof Role) {
                     $user->setRole($role);
                 }
@@ -150,29 +150,29 @@ class InitialiseCommand extends ContainerAwareCommand
         $created = 0;
         $records = [
             [
-                'title' => 'ROLE_SUPER_ADMIN',
-                'description' => 'This role has full access to every area of the app',
+                LabelConstant::TITLE => 'ROLE_SUPER_ADMIN',
+                LabelConstant::DESCRIPTION => 'This role has full access to every area of the app',
             ],
             [
-                'title' => 'ROLE_ADMIN',
-                'description' => 'This role has access to administrative features only',
+                LabelConstant::TITLE => 'ROLE_ADMIN',
+                LabelConstant::DESCRIPTION => 'This role has access to administrative features only',
             ],
             [
-                'title' => 'ROLE_USER',
-                'description' => 'This role only allows the user to login and access the most basic features',
+                LabelConstant::TITLE => 'ROLE_USER',
+                LabelConstant::DESCRIPTION => 'This role only allows the user to login and access the most basic features',
             ],
         ];
 
-        $roleRepository = $this->entityManager->getRepository('App:Security\Role');
+        $roleRepository = $this->entityManager->getRepository(EntityConstant::ROLE);
 
         foreach ($records as $record) {
-            $role = $roleRepository->findOneBy(['title' => $record['title']]);
+            $role = $roleRepository->findOneBy([LabelConstant::TITLE => $record[LabelConstant::TITLE]]);
 
             if ($role === null) {
                 $role = new Role();
                 $role
-                    ->setTitle($record['title'])
-                    ->setDescription($record['description'])
+                    ->setTitle($record[LabelConstant::TITLE])
+                    ->setDescription($record[LabelConstant::DESCRIPTION])
                     ->setCreatedBy($user);
 
                 $this->entityManager->persist($role);
@@ -195,13 +195,13 @@ class InitialiseCommand extends ContainerAwareCommand
             'Male',
         ];
 
-        $genderRepository = $this->entityManager->getRepository('App:Lookup\Gender');
-        $userRepository = $this->entityManager->getRepository('App:Security\User');
+        $genderRepository = $this->entityManager->getRepository(EntityConstant::GENDER);
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
-        $user = $userRepository->findOneBy(['username' => 'system']);
+        $user = $userRepository->findOneBy([LabelConstant::USERNAME => self::SYSTEM_USERNAME]);
 
         foreach ($records as $record) {
-            $gender = $genderRepository->findOneBy(['title' => $record]);
+            $gender = $genderRepository->findOneBy([LabelConstant::TITLE => $record]);
             if ($gender === null && $user instanceof User) {
                 $gender = new Gender();
                 $gender
@@ -231,13 +231,13 @@ class InitialiseCommand extends ContainerAwareCommand
             'Miss',
         ];
 
-        $titleRepository = $this->entityManager->getRepository('App:Lookup\Title');
-        $userRepository = $this->entityManager->getRepository('App:Security\User');
+        $titleRepository = $this->entityManager->getRepository(EntityConstant::TITLE);
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
-        $user = $userRepository->findOneBy(['username' => 'system']);
+        $user = $userRepository->findOneBy([LabelConstant::USERNAME => self::SYSTEM_USERNAME]);
 
         foreach ($records as $record) {
-            $title = $titleRepository->findOneBy(['title' => $record]);
+            $title = $titleRepository->findOneBy([LabelConstant::TITLE => $record]);
             if ($title === null && $user instanceof User) {
                 $title = new Title();
                 $title

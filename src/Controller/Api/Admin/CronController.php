@@ -3,6 +3,9 @@
 namespace App\Controller\Api\Admin;
 
 use App\Constant\Admin\CronConstant;
+use App\Constant\AppConstant;
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Helper\ResponseHelper;
 use Doctrine\ORM\EntityManager;
@@ -30,8 +33,8 @@ class CronController extends ApiController
     public function getCronJobs(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $cronJobRepository = $this->entityManager->getRepository('GregDoakCronBundle:CronJob');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $cronJobRepository = $this->entityManager->getRepository(EntityConstant::CRON_JOB);
 
         $cronJobs = $cronJobRepository->getCronJobHistory();
 
@@ -53,7 +56,7 @@ class CronController extends ApiController
     public function getCronJob(CronJob $cronJob): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         $data = ResponseHelper::buildSuccessResponse(200, $cronJob);
 
@@ -75,8 +78,8 @@ class CronController extends ApiController
     public function getCronJobTasks(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $cronJobTaskRepository = $this->entityManager->getRepository('GregDoakCronBundle:CronJobTask');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $cronJobTaskRepository = $this->entityManager->getRepository(EntityConstant::CRON_JOB_TASK);
 
         $cronJobTasks = $cronJobTaskRepository->findAll();
 
@@ -98,7 +101,7 @@ class CronController extends ApiController
     public function getCronJobTask(CronJobTask $cronJobTask): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         $data = ResponseHelper::buildSuccessResponse(200, $cronJobTask);
 
@@ -123,15 +126,16 @@ class CronController extends ApiController
     public function createCronJobTask(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         try {
-            $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $request->get('startDate'));
-            $intervalPeriod = (int)$request->get('intervalPeriod');
-            $intervalContext = $request->get('intervalContext');
-            $priority = (int)$request->get('priority');
+            $startDate = \DateTime::createFromFormat(AppConstant::FORMAT_DATETIME,
+                $request->get(LabelConstant::START_DATE));
+            $intervalPeriod = (int)$request->get(LabelConstant::INTERVAL_PERIOD);
+            $intervalContext = $request->get(LabelConstant::INTERVAL_CONTEXT);
+            $priority = (int)$request->get(LabelConstant::PRIORITY);
 
-            if ($startDate === false || $startDate->format('Y-m-d H:i:s') !== $request->get('startDate')) {
+            if ($startDate === false || $startDate->format(AppConstant::FORMAT_DATETIME) !== $request->get(LabelConstant::START_DATE)) {
                 throw new \UnexpectedValueException(CronConstant::START_DATE_VALIDATION, 400);
             }
 
@@ -139,7 +143,7 @@ class CronController extends ApiController
                 throw new \UnexpectedValueException(CronConstant::INTERVAL_PERIOD_VALIDATION, 400);
             }
 
-            if ( ! in_array($intervalContext, CronConstant::INTERVAL_CONTEXT_OPTIONS)) {
+            if ( ! \in_array($intervalContext, CronConstant::INTERVAL_CONTEXT_OPTIONS, true)) {
                 throw new \UnexpectedValueException(
                     sprintf(
                         CronConstant::INTERVAL_CONTEXT_VALIDATION,
@@ -154,7 +158,7 @@ class CronController extends ApiController
 
             $cronJobTask = new CronJobTask();
             $cronJobTask
-                ->setCommand($request->get('command'))
+                ->setCommand($request->get(LabelConstant::COMMAND))
                 ->setStartDate($startDate)
                 ->setIntervalPeriod($intervalPeriod)
                 ->setIntervalContext($intervalContext)
@@ -167,7 +171,7 @@ class CronController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(CronConstant::CREATE_SUCCESS_MESSAGE, $cronJobTask->getCommand())
             );
 
@@ -207,19 +211,19 @@ class CronController extends ApiController
     public function updateCronJobTask(Request $request, CronJobTask $cronJobTask): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
         $sourceCronJobTask = clone $cronJobTask;
 
         try {
-            $intervalPeriod = (int)$request->get('intervalPeriod');
-            $intervalContext = $request->get('intervalContext');
-            $priority = (int)$request->get('priority');
+            $intervalPeriod = (int)$request->get(LabelConstant::INTERVAL_PERIOD);
+            $intervalContext = $request->get(LabelConstant::INTERVAL_CONTEXT);
+            $priority = (int)$request->get(LabelConstant::PRIORITY);
 
             if ($intervalPeriod < 1) {
                 throw new \UnexpectedValueException(CronConstant::INTERVAL_PERIOD_VALIDATION, 400);
             }
 
-            if ( ! in_array($intervalContext, CronConstant::INTERVAL_CONTEXT_OPTIONS)) {
+            if ( ! \in_array($intervalContext, CronConstant::INTERVAL_CONTEXT_OPTIONS, true)) {
                 throw new \UnexpectedValueException(
                     sprintf(
                         CronConstant::INTERVAL_CONTEXT_VALIDATION,
@@ -233,11 +237,11 @@ class CronController extends ApiController
             }
 
             $cronJobTask
-                ->setCommand($request->get('command'))
+                ->setCommand($request->get(LabelConstant::COMMAND))
                 ->setIntervalPeriod($intervalPeriod)
                 ->setIntervalContext($intervalContext)
                 ->setPriority($priority)
-                ->setActive(($request->get('active', true)));
+                ->setActive($request->get(LabelConstant::ACTIVE, true));
 
             $this->validateEntity($cronJobTask, CronConstant::UPDATE_VALIDATION_ERROR);
 
@@ -245,7 +249,7 @@ class CronController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(CronConstant::UPDATE_SUCCESS_MESSAGE, $sourceCronJobTask->getCommand())
             );
 

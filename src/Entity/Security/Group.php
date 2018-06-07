@@ -147,12 +147,12 @@ class Group
      */
     public function getRoles(): array
     {
-        $roles = [];
+        $roleTitles = [];
         foreach ($this->getRolesCollection() as $role) {
-            $roles[] = $role->getTitle();
+            $roleTitles[] = $role->getTitle();
         }
 
-        return $roles;
+        return $roleTitles;
     }
 
     /**

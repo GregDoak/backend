@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Entity\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -42,8 +44,8 @@ class ChangePasswordCommand extends Command
             ->setDescription('Change the password of a user.')
             ->setDefinition(
                 [
-                    new InputArgument('username', InputArgument::REQUIRED, 'The username'),
-                    new InputArgument('password', InputArgument::REQUIRED, 'The password'),
+                    new InputArgument(LabelConstant::USERNAME, InputArgument::REQUIRED, 'The username'),
+                    new InputArgument(LabelConstant::PASSWORD, InputArgument::REQUIRED, 'The password'),
                 ]
             );
     }
@@ -54,10 +56,10 @@ class ChangePasswordCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $username = $input->getArgument('username');
-        $password = $input->getArgument('password');
+        $username = $input->getArgument(LabelConstant::USERNAME);
+        $password = $input->getArgument(LabelConstant::PASSWORD);
 
-        $user = $this->entityManager->getRepository('App:Security\User')->getUserByUsername($username);
+        $user = $this->entityManager->getRepository(EntityConstant::USER)->getUserByUsername($username);
         if ($user instanceof User) {
             $user->setPassword($this->encoder->encodePassword($user, $password));
 
@@ -79,33 +81,33 @@ class ChangePasswordCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $questions = [];
-        if ( ! $input->getArgument('username')) {
+        if ( ! $input->getArgument(LabelConstant::USERNAME)) {
             $question = new Question('Please give the username:');
             $question->setValidator(
                 function ($username) {
                     if (empty($username)) {
-                        throw new \Exception('Username can not be empty');
+                        throw new \UnexpectedValueException('Username can not be empty');
                     }
 
                     return $username;
                 }
             );
-            $questions['username'] = $question;
+            $questions[LabelConstant::USERNAME] = $question;
         }
 
-        if ( ! $input->getArgument('password')) {
+        if ( ! $input->getArgument(LabelConstant::PASSWORD)) {
             $question = new Question('Please enter the new password:');
             $question->setValidator(
                 function ($password) {
                     if (empty($password)) {
-                        throw new \Exception('Password can not be empty');
+                        throw new \UnexpectedValueException('Password can not be empty');
                     }
 
                     return $password;
                 }
             );
             $question->setHidden(true);
-            $questions['password'] = $question;
+            $questions[LabelConstant::PASSWORD] = $question;
         }
 
         foreach ($questions as $name => $question) {

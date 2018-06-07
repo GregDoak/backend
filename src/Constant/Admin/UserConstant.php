@@ -15,9 +15,9 @@ class UserConstant
     public const USERNAME_EMPTY_ERROR = 'The username is a required field and cannot be empty.';
     public const USERNAME_MIN_LENGTH_ERROR = 'The username must be at least {{ limit }} characters long.';
     public const USERNAME_MAX_LENGTH_ERROR = 'The username cannot be longer than {{ limit }} characters.';
-    public const PASSWORD_EMPTY_ERROR = 'The password is a required field and cannot be empty.';
-    public const PASSWORD_MIN_LENGTH_ERROR = 'The password must be at least {{ limit }} characters long.';
-    public const PASSWORD_MAX_LENGTH_ERROR = 'The password cannot be longer than {{ limit }} characters.';
+    public const PASSWORD_EMPTY_ERROR = 'The password is a required field and cannot be empty.'; //NOSONAR
+    public const PASSWORD_MIN_LENGTH_ERROR = 'The password must be at least {{ limit }} characters long.'; //NOSONAR
+    public const PASSWORD_MAX_LENGTH_ERROR = 'The password cannot be longer than {{ limit }} characters.'; //NOSONAR
     public const CREATED_BY_EMPTY_ERROR = 'The Created By is a required field and cannot be empty.';
 
     //Constants for Annotations in App\Controller\Api\Admin\UserController

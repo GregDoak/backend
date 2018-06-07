@@ -2,6 +2,8 @@
 
 namespace App\Controller\Api\My;
 
+use App\Constant\AppConstant;
+use App\Constant\EntityConstant;
 use App\Constant\My\TokenConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\JwtRefreshToken;
@@ -27,8 +29,8 @@ class TokenController extends ApiController
     public function getTokens(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $tokenRepository = $this->entityManager->getRepository('App:Security\JwtRefreshToken');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $tokenRepository = $this->entityManager->getRepository(EntityConstant::JWT_REFRESH_TOKEN);
 
         $tokens = $tokenRepository->getTokens($this->authenticatedUser->getUsername());
 
@@ -49,7 +51,7 @@ class TokenController extends ApiController
     public function deleteTokens(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder
@@ -60,7 +62,8 @@ class TokenController extends ApiController
         $queryBuilder->getQuery()->execute();
         $this->entityManager->flush();
 
-        $data = ResponseHelper::buildMessageResponse('success', TokenConstant::DELETE_TOKENS_SUCCESS_MESSAGE);
+        $data = ResponseHelper::buildMessageResponse(AppConstant::SUCCESS_TYPE,
+            TokenConstant::DELETE_TOKENS_SUCCESS_MESSAGE);
 
         $data = ResponseHelper::buildSuccessResponse(200, $data);
 
@@ -84,7 +87,7 @@ class TokenController extends ApiController
     public function deleteToken(JwtRefreshToken $jwtRefreshToken): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         if ($jwtRefreshToken->getUsername() !== $this->authenticatedUser->getUsername()) {
             throw new AccessDeniedHttpException(TokenConstant::DELETE_TOKEN_SECURITY_ERROR);
@@ -93,7 +96,8 @@ class TokenController extends ApiController
         $this->entityManager->remove($jwtRefreshToken);
         $this->entityManager->flush();
 
-        $data = ResponseHelper::buildMessageResponse('success', TokenConstant::DELETE_TOKEN_SUCCESS_MESSAGE);
+        $data = ResponseHelper::buildMessageResponse(AppConstant::SUCCESS_TYPE,
+            TokenConstant::DELETE_TOKEN_SUCCESS_MESSAGE);
 
         $data = ResponseHelper::buildSuccessResponse(200, $data);
 

@@ -3,6 +3,9 @@
 namespace App\Controller\Api\Admin;
 
 use App\Constant\Admin\UserConstant;
+use App\Constant\AppConstant;
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\User;
 use App\Helper\ResponseHelper;
@@ -38,8 +41,8 @@ class UserController extends ApiController
     public function getUsers(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $this->userRepository = $this->entityManager->getRepository('App:Security\User');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         $users = $this->userRepository->getUsers();
 
@@ -61,8 +64,8 @@ class UserController extends ApiController
     public function getSingleUser(User $user): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $this->userRepository = $this->entityManager->getRepository('App:Security\User');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         $data = ResponseHelper::buildSuccessResponse(200, $user);
 
@@ -88,21 +91,21 @@ class UserController extends ApiController
     public function createUser(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
         $encoder = $this->get('security.password_encoder');
 
         try {
             $user = new User();
             $user
-                ->setUsername($request->get('username'))
-                ->setPlainPassword($request->get('password'))
+                ->setUsername($request->get(LabelConstant::USERNAME))
+                ->setPlainPassword($request->get(LabelConstant::PASSWORD))
                 ->setLoginCount()
                 ->setEnabled(true)
                 ->setExpired(true)
                 ->setCreatedBy($this->authenticatedUser);
 
-            UserHelper::setGroups($user, (array)$request->get('groups'), $this->entityManager);
-            UserHelper::setRoles($user, (array)$request->get('roles'), $this->entityManager);
+            UserHelper::setGroups($user, (array)$request->get(LabelConstant::GROUPS), $this->entityManager);
+            UserHelper::setRoles($user, (array)$request->get(LabelConstant::ROLES), $this->entityManager);
 
             $this->validateEntity($user, UserConstant::CREATE_VALIDATION_ERROR);
             $user->setPassword($encoder->encodePassword($user, $user->getPlainPassword()));
@@ -111,7 +114,7 @@ class UserController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(UserConstant::CREATE_SUCCESS_MESSAGE, $user->getUsername())
             );
 
@@ -152,20 +155,20 @@ class UserController extends ApiController
     public function updateUser(Request $request, User $user): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
         $sourceUser = clone $user;
 
         try {
             $user
-                ->setUsername($request->get('username'))
+                ->setUsername($request->get(LabelConstant::USERNAME))
                 ->setPlainPassword($user->getPassword())
                 ->setUpdatedBy($this->authenticatedUser)
                 ->setUpdatedOn()
                 ->clearGroups()
                 ->clearRoles();
 
-            UserHelper::setGroups($user, (array)$request->get('groups'), $this->entityManager);
-            UserHelper::setRoles($user, (array)$request->get('roles'), $this->entityManager);
+            UserHelper::setGroups($user, (array)$request->get(LabelConstant::GROUPS), $this->entityManager);
+            UserHelper::setRoles($user, (array)$request->get(LabelConstant::ROLES), $this->entityManager);
 
             $this->validateEntity($user, UserConstant::UPDATE_VALIDATION_ERROR);
 
@@ -173,7 +176,7 @@ class UserController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(UserConstant::UPDATE_SUCCESS_MESSAGE, $sourceUser->getUsername())
             );
 
@@ -217,13 +220,13 @@ class UserController extends ApiController
     public function deleteUser(User $user): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         $this->entityManager->remove($user);
         $this->entityManager->flush();
 
         $data = ResponseHelper::buildMessageResponse(
-            'success',
+            AppConstant::SUCCESS_TYPE,
             sprintf(UserConstant::DELETE_SUCCESS_MESSAGE, $user->getUsername())
         );
 

@@ -3,12 +3,12 @@
 namespace App\Controller\Api\Admin;
 
 use App\Constant\Admin\AuditConstant;
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Helper\AuditHelper;
 use App\Helper\ResponseHelper;
-use DataDog\AuditBundle\Entity\Association;
 use DataDog\AuditBundle\Entity\AuditLog;
-use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\EntityManager;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
@@ -30,35 +30,35 @@ class AuditController extends ApiController
      * @throws \LogicException
      * @return View
      */
-    public function getAuditLogs()
+    public function getAuditLogs(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $auditLogRepository = $this->entityManager->getRepository('DataDogAuditBundle:AuditLog');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $auditLogRepository = $this->entityManager->getRepository(EntityConstant::AUDIT_LOG);
 
-        $auditLogs = $auditLogRepository->findBy([], ['id' => 'DESC']);
+        $auditLogs = $auditLogRepository->findBy([], [LabelConstant::ID => 'DESC']);
         $simpleAuditLogs = [];
         if (\count($auditLogs) > 0) {
             /** @var AuditLog $auditLog */
             foreach ($auditLogs as $auditLog) {
                 $simpleAuditLog = [
-                    'id' => $auditLog->getId(),
-                    'action' => AuditHelper::getAction($auditLog->getAction()),
-                    'table' => $auditLog->getTbl(),
-                    'source' => AuditHelper::getEntity($this->entityManager, $auditLog->getSource()),
-                    'target' => $auditLog->getTarget() !== null ? AuditHelper::getEntity(
+                    LabelConstant::ID => $auditLog->getId(),
+                    LabelConstant::ACTION => AuditHelper::getAction($auditLog->getAction()),
+                    LabelConstant::TABLE => $auditLog->getTbl(),
+                    LabelConstant::SOURCE => AuditHelper::getEntity($this->entityManager, $auditLog->getSource()),
+                    LabelConstant::TARGET => $auditLog->getTarget() !== null ? AuditHelper::getEntity(
                         $this->entityManager,
                         $auditLog->getTarget()
                     ) : null,
-                    'updatedBy' => $auditLog->getBlame() !== null ? AuditHelper::getEntity(
+                    LabelConstant::UPDATED_BY => $auditLog->getBlame() !== null ? AuditHelper::getEntity(
                         $this->entityManager,
                         $auditLog->getBlame()
                     ) : null,
-                    'changes' => count($auditLog->getDiff()),
-                    'updatedOn' => $auditLog->getLoggedAt(),
+                    LabelConstant::CHANGES => \count($auditLog->getDiff()),
+                    LabelConstant::UPDATED_ON => $auditLog->getLoggedAt(),
                 ];
 
-                if ($simpleAuditLog['source'] !== null && $simpleAuditLog['updatedBy'] !== null) {
+                if ($simpleAuditLog[LabelConstant::SOURCE] !== null && $simpleAuditLog[LabelConstant::UPDATED_BY] !== null) {
                     $simpleAuditLogs[] = $simpleAuditLog;
                 }
             }
@@ -80,26 +80,26 @@ class AuditController extends ApiController
      * @throws \LogicException
      * @return View
      */
-    public function getAuditLog(AuditLog $auditLog)
+    public function getAuditLog(AuditLog $auditLog): View
     {
         $this->authenticatedUser = $this->getUser();
         $this->entityManager = $this->get('doctrine.orm.entity_manager');
 
         $simpleAuditLog = [
-            'id' => $auditLog->getId(),
-            'action' => AuditHelper::getAction($auditLog->getAction()),
-            'table' => $auditLog->getTbl(),
-            'source' => AuditHelper::getEntity($this->entityManager, $auditLog->getSource()),
-            'target' => $auditLog->getTarget() !== null ? AuditHelper::getEntity(
+            LabelConstant::ID => $auditLog->getId(),
+            LabelConstant::ACTION => AuditHelper::getAction($auditLog->getAction()),
+            LabelConstant::TABLE => $auditLog->getTbl(),
+            LabelConstant::SOURCE => AuditHelper::getEntity($this->entityManager, $auditLog->getSource()),
+            LabelConstant::TARGET => $auditLog->getTarget() !== null ? AuditHelper::getEntity(
                 $this->entityManager,
                 $auditLog->getTarget()
             ) : null,
-            'updatedBy' => $auditLog->getBlame() !== null ? AuditHelper::getEntity(
+            LabelConstant::UPDATED_BY => $auditLog->getBlame() !== null ? AuditHelper::getEntity(
                 $this->entityManager,
                 $auditLog->getBlame()
             ) : null,
-            'changes' => $auditLog->getDiff(),
-            'updatedOn' => $auditLog->getLoggedAt(),
+            LabelConstant::CHANGES => $auditLog->getDiff(),
+            LabelConstant::UPDATED_ON => $auditLog->getLoggedAt(),
         ];
 
         $data = ResponseHelper::buildSuccessResponse(200, $simpleAuditLog);

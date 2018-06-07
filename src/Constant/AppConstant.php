@@ -18,11 +18,13 @@ use App\Constant\Security\AuthenticationConstant;
  */
 class AppConstant
 {
+    public const FORMAT_DATETIME = 'Y-m-d H:i:s';
     public const DEFAULT_EXCEPTION = 'An unknown error has occurred. Please try again.';
     public const HTTP_NOT_FOUND = 'Page not found';
     public const HTTP_METHOD_NOT_ALLOWED = 'This method is not allowed on this page.';
     public const NOT_LOGGED_IN = 'You are not currently logged in.  Please login in and try again.';
     public const ORM_EXCEPTION = 'There was a problem connecting to the database.  Please try again later.';
+    public const SUCCESS_TYPE = 'success';
 
     /**
      * @param string $message
@@ -44,7 +46,7 @@ class AppConstant
             }
         }
 
-        return strlen($convertedMessage) > 0 ? $convertedMessage : $message;
+        return \strlen($convertedMessage) > 0 ? $convertedMessage : $message;
     }
 
     /**

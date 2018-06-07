@@ -210,7 +210,7 @@ class JwtRefreshToken implements RefreshTokenInterface
     {
         $datetime = new \DateTime();
 
-        return ($this->valid >= $datetime) ? true : false;
+        return $this->valid >= $datetime;
     }
 
     /**
@@ -235,7 +235,7 @@ class JwtRefreshToken implements RefreshTokenInterface
      */
     public function setRefreshToken($refreshToken = null): JwtRefreshToken
     {
-        if (null == $refreshToken) {
+        if ($refreshToken === null) {
             $this->refreshToken = bin2hex(openssl_random_pseudo_bytes(64));
         } else {
             $this->refreshToken = $refreshToken;

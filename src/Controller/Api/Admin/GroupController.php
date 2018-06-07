@@ -3,6 +3,9 @@
 namespace App\Controller\Api\Admin;
 
 use App\Constant\Admin\GroupConstant;
+use App\Constant\AppConstant;
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\Group;
 use App\Helper\GroupHelper;
@@ -38,8 +41,8 @@ class GroupController extends ApiController
     public function getGroups(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $this->groupRepository = $this->entityManager->getRepository('App:Security\Group');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->groupRepository = $this->entityManager->getRepository(EntityConstant::GROUP);
 
         $groups = $this->groupRepository->getGroups();
 
@@ -61,8 +64,8 @@ class GroupController extends ApiController
     public function getGroup(Group $group): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $this->groupRepository = $this->entityManager->getRepository('App:Security\Group');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->groupRepository = $this->entityManager->getRepository(EntityConstant::GROUP);
 
         $data = ResponseHelper::buildSuccessResponse(200, $group);
 
@@ -88,16 +91,16 @@ class GroupController extends ApiController
     public function createGroup(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         try {
             $group = new Group();
             $group
-                ->setTitle($request->get('title'))
-                ->setDescription($request->get('description'))
+                ->setTitle($request->get(LabelConstant::TITLE))
+                ->setDescription($request->get(LabelConstant::DESCRIPTION))
                 ->setCreatedBy($this->authenticatedUser);
 
-            GroupHelper::setRoles($group, (array)$request->get('roles'), $this->entityManager);
+            GroupHelper::setRoles($group, (array)$request->get(LabelConstant::ROLES), $this->entityManager);
 
             $this->validateEntity($group, GroupConstant::CREATE_VALIDATION_ERROR);
 
@@ -105,7 +108,7 @@ class GroupController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(GroupConstant::CREATE_SUCCESS_MESSAGE, $group->getTitle())
             );
 
@@ -146,17 +149,17 @@ class GroupController extends ApiController
     public function updateGroup(Request $request, Group $group): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
         $sourceGroup = clone $group;
 
         try {
             $group
-                ->setTitle(strtoupper($request->get('title')))
-                ->setDescription($request->get('description'))
+                ->setTitle(strtoupper($request->get(LabelConstant::TITLE)))
+                ->setDescription($request->get(LabelConstant::DESCRIPTION))
                 ->setUpdatedBy($this->authenticatedUser)
                 ->setUpdatedOn();
 
-            GroupHelper::setRoles($group, (array)$request->get('roles'), $this->entityManager);
+            GroupHelper::setRoles($group, (array)$request->get(LabelConstant::ROLES), $this->entityManager);
 
             $this->validateEntity($group, GroupConstant::UPDATE_VALIDATION_ERROR);
 
@@ -164,7 +167,7 @@ class GroupController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(GroupConstant::UPDATE_SUCCESS_MESSAGE, $sourceGroup->getTitle())
             );
 
@@ -208,13 +211,13 @@ class GroupController extends ApiController
     public function deleteGroup(Group $group): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         $this->entityManager->remove($group);
         $this->entityManager->flush();
 
         $data = ResponseHelper::buildMessageResponse(
-            'success',
+            AppConstant::SUCCESS_TYPE,
             sprintf(GroupConstant::DELETE_SUCCESS_MESSAGE, $group->getTitle())
         );
 

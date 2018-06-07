@@ -3,6 +3,9 @@
 namespace App\Controller\Api\Admin;
 
 use App\Constant\Admin\RoleConstant;
+use App\Constant\AppConstant;
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\Role;
 use App\Helper\ResponseHelper;
@@ -37,8 +40,8 @@ class RoleController extends ApiController
     public function getRoles(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $this->roleRepository = $this->entityManager->getRepository('App:Security\Role');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->roleRepository = $this->entityManager->getRepository(EntityConstant::ROLE);
 
         $roles = $this->roleRepository->getRoles();
 
@@ -60,8 +63,8 @@ class RoleController extends ApiController
     public function getRole(Role $role): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
-        $this->roleRepository = $this->entityManager->getRepository('App:Security\Role');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->roleRepository = $this->entityManager->getRepository(EntityConstant::ROLE);
 
         $data = ResponseHelper::buildSuccessResponse(200, $role);
 
@@ -83,13 +86,13 @@ class RoleController extends ApiController
     public function createRole(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         try {
             $role = new Role();
             $role
-                ->setTitle(strtoupper($request->get('title')))
-                ->setDescription($request->get('description'))
+                ->setTitle(strtoupper($request->get(LabelConstant::TITLE)))
+                ->setDescription($request->get(LabelConstant::DESCRIPTION))
                 ->setCreatedBy($this->authenticatedUser);
 
             $this->validateEntity($role, RoleConstant::CREATE_VALIDATION_ERROR);
@@ -98,7 +101,7 @@ class RoleController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(RoleConstant::CREATE_SUCCESS_MESSAGE, $role->getTitle())
             );
 
@@ -139,13 +142,13 @@ class RoleController extends ApiController
     public function updateRole(Request $request, Role $role): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
         $sourceRole = clone $role;
 
         try {
             $role
-                ->setTitle($request->get('title'))
-                ->setDescription($request->get('description'))
+                ->setTitle($request->get(LabelConstant::TITLE))
+                ->setDescription($request->get(LabelConstant::DESCRIPTION))
                 ->setUpdatedBy($this->authenticatedUser)
                 ->setUpdatedOn();
 
@@ -155,7 +158,7 @@ class RoleController extends ApiController
             $this->entityManager->flush();
 
             $data = ResponseHelper::buildMessageResponse(
-                'success',
+                AppConstant::SUCCESS_TYPE,
                 sprintf(RoleConstant::UPDATE_SUCCESS_MESSAGE, $sourceRole->getTitle())
             );
 
@@ -195,13 +198,13 @@ class RoleController extends ApiController
     public function deleteRole(Role $role): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
 
         $this->entityManager->remove($role);
         $this->entityManager->flush();
 
         $data = ResponseHelper::buildMessageResponse(
-            'success',
+            AppConstant::SUCCESS_TYPE,
             sprintf(RoleConstant::DELETE_SUCCESS_MESSAGE, $role->getTitle())
         );
 
