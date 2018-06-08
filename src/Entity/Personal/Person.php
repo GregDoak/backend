@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\Personal\PersonRepository")
  * @ORM\Table(name="persons",indexes={@ORM\Index(columns={"first_name", "last_name", "date_of_birth"})})
  */
-class Person
+class Person //NOSONAR
 {
     /**
      * @ORM\Id

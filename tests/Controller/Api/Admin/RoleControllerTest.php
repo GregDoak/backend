@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleControllerTest extends WebTestCase
 {
-    public function testGetRoles()
+    public function testGetRoles(): void
     {
         $this->client->request('GET', '/api/admin/roles.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_OK);
@@ -22,14 +22,14 @@ class RoleControllerTest extends WebTestCase
         );
     }
 
-    public function testGetInvalidRole()
+    public function testGetInvalidRole(): void
     {
         $this->client->request('GET', '/api/admin/role/INVALID.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testGetValidRole()
+    public function testGetValidRole(): void
     {
         $roleRepository = $this->entityManager->getRepository('App:Security\Role');
 
@@ -49,7 +49,7 @@ class RoleControllerTest extends WebTestCase
         $this->assertEquals($content->data->title, $role->getTitle(), 'The roles do not match.');
     }
 
-    public function testCreateInvalidRole()
+    public function testCreateInvalidRole(): void
     {
         $parameters = [
             'title' => '',
@@ -68,7 +68,7 @@ class RoleControllerTest extends WebTestCase
         );
     }
 
-    public function testCreateRole()
+    public function testCreateRole(): void
     {
         $parameters = [
             'title' => 'ROLE_TEST',
@@ -84,7 +84,7 @@ class RoleControllerTest extends WebTestCase
         );
     }
 
-    public function testCreateDuplicateRole()
+    public function testCreateDuplicateRole(): void
     {
         $parameters = [
             'title' => 'ROLE_TEST',
@@ -105,14 +105,14 @@ class RoleControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdateMissingRole()
+    public function testUpdateMissingRole(): void
     {
         $this->client->request('PUT', '/api/admin/role/.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testUpdateInvalidRole()
+    public function testUpdateInvalidRole(): void
     {
         $parameters = [
             'title' => 'ROLE_TEST',
@@ -124,7 +124,7 @@ class RoleControllerTest extends WebTestCase
         $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testUpdateDuplicateRole()
+    public function testUpdateDuplicateRole(): void
     {
         $roleRepository = $this->entityManager->getRepository('App:Security\Role');
 
@@ -162,7 +162,7 @@ class RoleControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdateRole()
+    public function testUpdateRole(): void
     {
         $roleRepository = $this->entityManager->getRepository('App:Security\Role');
 
@@ -194,21 +194,21 @@ class RoleControllerTest extends WebTestCase
         );
     }
 
-    public function testDeleteMissingRole()
+    public function testDeleteMissingRole(): void
     {
         $this->client->request('DELETE', '/api/admin/role/.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testDeleteInvalidRole()
+    public function testDeleteInvalidRole(): void
     {
         $this->client->request('PUT', '/api/admin/role/INVALID.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testDeleteRole()
+    public function testDeleteRole(): void
     {
         $roleRepository = $this->entityManager->getRepository('App:Security\Role');
 

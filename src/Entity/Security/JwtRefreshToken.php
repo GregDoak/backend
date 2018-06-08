@@ -232,11 +232,12 @@ class JwtRefreshToken implements RefreshTokenInterface
     /**
      * @param null $refreshToken
      * @return JwtRefreshToken
+     * @throws \Exception
      */
     public function setRefreshToken($refreshToken = null): JwtRefreshToken
     {
         if ($refreshToken === null) {
-            $this->refreshToken = bin2hex(openssl_random_pseudo_bytes(64));
+            $this->refreshToken = bin2hex(random_bytes(64));
         } else {
             $this->refreshToken = $refreshToken;
         }

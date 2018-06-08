@@ -31,7 +31,7 @@ class AuditHelper
      * @param Association $association
      * @return array
      */
-    public static function getEntity(EntityManager $entityManager, Association $association)
+    public static function getEntity(EntityManager $entityManager, Association $association): array
     {
         $entityRepository = $entityManager->getRepository($association->getClass());
         $entity = $entityRepository->find($association->getFk());

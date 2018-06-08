@@ -16,14 +16,14 @@ class RoleRepositoryTest extends KernelTestCase
      */
     private $entityManager;
 
-    public function testGetRoleByTitleInvalid()
+    public function testGetRoleByTitleInvalid(): void
     {
         $role = $this->entityManager->getRepository('App:Security\Role')->getRoleByTitle('INVALID');
 
         $this->assertNull($role, 'The invalid role should be null');
     }
 
-    public function testGetRoleByTitleValid()
+    public function testGetRoleByTitleValid(): void
     {
         $role = $this->entityManager->getRepository('App:Security\Role')->getRoleByTitle('ROLE_USER');
 

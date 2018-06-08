@@ -6,6 +6,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+.scannerwork/
 
 ###> symfony/framework-bundle ###
 .env
@@ -21,4 +22,5 @@
 ###> symfony/phpunit-bridge ###
 .phpunit
 /phpunit.xml
+/coverage
 ###< symfony/phpunit-bridge ###

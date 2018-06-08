@@ -2,7 +2,11 @@
 
 namespace App\Tests\Security;
 
+use App\Constant\AppConstant;
+use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Constant\Security\AuthenticationConstant;
+use App\Constant\UrlConstant;
 use App\Entity\Security\User;
 use App\Tests\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,30 +14,31 @@ use Symfony\Component\HttpFoundation\Response;
 class AuthenticationTest extends WebTestCase
 {
     private const USERNAME = 'TestUser';
-    private const PASSWORD = 'TestPassword01';
+    private const PASSWORD = 'TestPassword01'; //NOSONAR
 
     /**
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $userRepository = $this->entityManager->getRepository('App:Security\User');
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
-        $systemUser = $userRepository->getUserByUsername('system');
+        $systemUser = $userRepository->getUserByUsername(AppConstant::SYSTEM_USERNAME);
         $testUser = $userRepository->getUserByUsername(self::USERNAME);
 
         if ( ! $testUser instanceof User) {
             $client = $this->createClient();
             $encoder = $client->getContainer()->get('security.password_encoder');
-            $roleRepository = $this->entityManager->getRepository('App:Security\Role');
+            $roleRepository = $this->entityManager->getRepository(EntityConstant::ROLE);
             $role = $roleRepository->getRoleByTitle('ROLE_USER');
 
             $testUser = new User();
             $testUser
                 ->setUsername(self::USERNAME)
+                ->setPlainPassword($encoder->encodePassword($testUser, self::PASSWORD))
                 ->setPassword($encoder->encodePassword($testUser, self::PASSWORD))
                 ->setLoginCount()
                 ->setRole($role)
@@ -49,11 +54,11 @@ class AuthenticationTest extends WebTestCase
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
 
-        $userRepository = $this->entityManager->getRepository('App:Security\User');
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         $testUser = $userRepository->getUserByUsername(self::USERNAME);
 
@@ -62,59 +67,62 @@ class AuthenticationTest extends WebTestCase
             $this->entityManager->flush();
         }
 
+        $this->entityManager->close();
+        $this->entityManager = null;
+
     }
 
-    public function testMissingCredentials()
+    public function testMissingCredentials(): void
     {
         $headers = [
-            'CONTENT_TYPE' => 'application/json',
+            LabelConstant::CONTENT_TYPE => LabelConstant::JSON_TYPE,
         ];
 
-        $this->client->request('POST', '/api/authentication/login', [], [], $headers);
+        $this->client->request('POST', UrlConstant::LOGIN, [], [], $headers);
         $this->doHeaderTests(Response::HTTP_UNAUTHORIZED);
-        $this->doMessageTests('danger', AuthenticationConstant::INVALID_CREDENTIALS, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AuthenticationConstant::INVALID_CREDENTIALS, []);
     }
 
-    public function testInvalidCredentials()
+    public function testInvalidCredentials(): void
     {
         $headers = [
-            'CONTENT_TYPE' => 'application/json',
+            LabelConstant::CONTENT_TYPE => LabelConstant::JSON_TYPE,
         ];
 
         $parameters = [
-            'username' => self::USERNAME.'INVALID',
-            'password' => self::PASSWORD.'INVALID',
+            'username' => self::USERNAME.'INVALID1',
+            'password' => self::PASSWORD.'INVALID2',
         ];
 
-        $this->client->request('POST', '/api/authentication/login', $parameters, [], $headers);
+        $this->client->request('POST', UrlConstant::LOGIN, $parameters, [], $headers);
         $this->doHeaderTests(Response::HTTP_UNAUTHORIZED);
-        $this->doMessageTests('danger', AuthenticationConstant::INVALID_CREDENTIALS, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AuthenticationConstant::INVALID_CREDENTIALS, []);
     }
 
-    public function testMissingToken()
+    public function testMissingToken(): void
     {
         $this->client->request('GET', '/api/my/account');
         $this->doHeaderTests(Response::HTTP_FORBIDDEN);
-        $this->doMessageTests('danger', AuthenticationConstant::JWT_NOT_FOUND, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AuthenticationConstant::JWT_NOT_FOUND, []);
     }
 
-    public function testInvalidToken()
+    public function testInvalidToken(): void
     {
         $headers = [
-            'HTTP_AUTHORIZATION' => 'Bearer INVALID',
-            'CONTENT_TYPE' => 'application/json',
+            LabelConstant::HTTP_AUTHORIZATION => 'Bearer INVALID',
+            LabelConstant::CONTENT_TYPE => LabelConstant::JSON_TYPE,
         ];
 
         $this->client->request('GET', '/api/my/account', [], [], $headers);
         $this->doHeaderTests(Response::HTTP_FORBIDDEN);
-        $this->doMessageTests('danger', AuthenticationConstant::JWT_INVALID, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AuthenticationConstant::JWT_INVALID, []);
     }
 
-    public function testValidToken()
+    public function testValidToken(): void
     {
         $headers = [
-            'HTTP_AUTHORIZATION' => 'Bearer '.$this->testValidCredentials(),
-            'CONTENT_TYPE' => 'application/json',
+            LabelConstant::HTTP_AUTHORIZATION => 'Bearer '.$this->testValidCredentials(),
+            LabelConstant::CONTENT_TYPE => LabelConstant::JSON_TYPE,
         ];
 
         $this->client->request('GET', '/api/my/account.json', [], [], $headers);
@@ -129,7 +137,7 @@ class AuthenticationTest extends WebTestCase
     public function testValidCredentials(string $return = 'token'): string
     {
         $headers = [
-            'CONTENT_TYPE' => 'application/json',
+            LabelConstant::CONTENT_TYPE => LabelConstant::JSON_TYPE,
         ];
 
         $parameters = [
@@ -137,7 +145,7 @@ class AuthenticationTest extends WebTestCase
             'password' => self::PASSWORD,
         ];
 
-        $this->client->request('POST', '/api/authentication/login', $parameters, [], $headers);
+        $this->client->request('POST', UrlConstant::LOGIN, $parameters, [], $headers);
         $this->doHeaderTests(Response::HTTP_CREATED);
         $this->doEntityTests(true, 2);
         $content = $this->getResponseContent();
@@ -148,31 +156,31 @@ class AuthenticationTest extends WebTestCase
         return $return === 'token' ? $content->data->token : $content->data->refresh_token;
     }
 
-    public function testMissingRefreshToken()
+    public function testMissingRefreshToken(): void
     {
-        $this->client->request('POST', '/api/authentication/refresh');
+        $this->client->request('POST', UrlConstant::REFRESH);
         $this->doHeaderTests(Response::HTTP_UNAUTHORIZED);
-        $this->doMessageTests('danger', AuthenticationConstant::JWT_REFRESH_FAILED, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AuthenticationConstant::JWT_REFRESH_FAILED, []);
     }
 
-    public function testInvalidRefreshToken()
+    public function testInvalidRefreshToken(): void
     {
         $parameters = [
-            'refresh_token' => 'INVALID',
+            LabelConstant::REFRESH_TOKEN => 'INVALID3',
         ];
 
-        $this->client->request('POST', '/api/authentication/refresh', $parameters);
+        $this->client->request('POST', UrlConstant::REFRESH, $parameters);
         $this->doHeaderTests(Response::HTTP_UNAUTHORIZED);
-        $this->doMessageTests('danger', AuthenticationConstant::JWT_REFRESH_FAILED, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AuthenticationConstant::JWT_REFRESH_FAILED, []);
     }
 
-    public function testValidRefreshToken()
+    public function testValidRefreshToken(): void
     {
         $parameters = [
-            'refresh_token' => $this->testValidCredentials('refresh_token'),
+            LabelConstant::REFRESH_TOKEN => $this->testValidCredentials(LabelConstant::REFRESH_TOKEN),
         ];
 
-        $this->client->request('POST', '/api/authentication/refresh', $parameters);
+        $this->client->request('POST', UrlConstant::REFRESH, $parameters);
         $this->doHeaderTests(Response::HTTP_CREATED);
         $this->doEntityTests(true, 1);
         $content = $this->getResponseContent();

@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\User;
 
@@ -20,11 +21,11 @@ class ResponseHelper
     public static function buildErrorResponse(int $code, string $message = null, array $messages = []): array
     {
         return [
-            'status' => false,
-            'code' => $code,
-            'data' => self::buildMessageResponse('danger', $message, $messages),
-            'count' => 3,
-            'time' => time(),
+            LabelConstant::STATUS => false,
+            LabelConstant::CODE => $code,
+            LabelConstant::DATA => self::buildMessageResponse('danger', $message, $messages),
+            LabelConstant::COUNT => 3,
+            LabelConstant::TIME => time(),
         ];
     }
 
@@ -37,9 +38,9 @@ class ResponseHelper
     public static function buildMessageResponse(string $type, string $message, array $messages = []): array
     {
         return [
-            'type' => $type,
-            'message' => $message,
-            'messages' => $messages,
+            LabelConstant::TYPE => $type,
+            LabelConstant::MESSAGE => $message,
+            LabelConstant::MESSAGES => $messages,
         ];
     }
 
@@ -51,11 +52,11 @@ class ResponseHelper
     public static function buildSuccessResponse(int $code, $data): array
     {
         return [
-            'status' => true,
-            'code' => $code,
-            'data' => $data,
-            'count' => \is_array($data) ? \count($data) : 1,
-            'time' => time(),
+            LabelConstant::STATUS => true,
+            LabelConstant::CODE => $code,
+            LabelConstant::DATA => $data,
+            LabelConstant::COUNT => \is_array($data) ? \count($data) : 1,
+            LabelConstant::TIME => time(),
         ];
     }
 
@@ -73,11 +74,11 @@ class ResponseHelper
         $class->logger->info(
             $class->getClassName(),
             [
-                'code' => $data['code'],
-                'action' => $action,
-                'message' => $message,
-                'messages' => $messages,
-                'username' => $username,
+                LabelConstant::CODE => $data[LabelConstant::CODE],
+                LabelConstant::ACTION => $action,
+                LabelConstant::MESSAGE => $message,
+                LabelConstant::MESSAGES => $messages,
+                LabelConstant::USERNAME => $username,
             ]
         );
     }

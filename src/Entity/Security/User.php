@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="users",indexes={@ORM\Index(columns={"username"})})
  * @UniqueEntity(fields="username", message=USER_UNIQUE_ENTITY_ERROR)
  */
-class User implements UserInterface
+class User implements UserInterface //NOSONAR
 {
     /**
      * @var \Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken[]
@@ -287,14 +287,6 @@ class User implements UserInterface
     /**
      * @return bool
      */
-    public function getEnabled(): bool
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * @return bool
-     */
     public function isEnabled(): bool
     {
         return $this->enabled;
@@ -326,16 +318,16 @@ class User implements UserInterface
      */
     public function isExpired(int $passwordIntervalDays): bool
     {
-        $expired = $this->expired;
-        if ($expired === false && $passwordIntervalDays > 0) {
+        $isExpired = $this->expired;
+        if ($isExpired === false && $passwordIntervalDays > 0) {
             $interval = new \DateInterval(sprintf('P%dD', $passwordIntervalDays));
             $passwordExpiry = $this->getPasswordCreatedOn()->add($interval);
             if ($passwordExpiry < new \DateTime()) {
-                $expired = true;
+                $isExpired = true;
             }
         }
 
-        return $expired;
+        return $isExpired;
     }
 
     /**
@@ -509,12 +501,12 @@ class User implements UserInterface
      */
     public function isAuthorised(): bool
     {
-        $roles = $this->getRoles();
+        $userRoles = $this->getRoles();
 
         return
-            \in_array('ROLE_USER', $roles, true) ||
-            \in_array('ROLE_ADMIN', $roles, true) ||
-            \in_array('ROLE_SUPER_ADMIN', $roles, true);
+            \in_array('ROLE_USER', $userRoles, true) ||
+            \in_array('ROLE_ADMIN', $userRoles, true) ||
+            \in_array('ROLE_SUPER_ADMIN', $userRoles, true);
     }
 
     /**
@@ -522,12 +514,12 @@ class User implements UserInterface
      */
     public function getRoles(): array
     {
-        $roles = [];
+        $userRoles = [];
         foreach ($this->getRolesCollection() as $role) {
-            $roles[] = $role->getTitle();
+            $userRoles[] = $role->getTitle();
         }
 
-        return $roles;
+        return $userRoles;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Constant\EntityConstant;
 use App\Entity\Security\Group;
 use App\Entity\Security\Role;
 use App\Entity\Security\User;
@@ -18,11 +19,11 @@ class UserHelper
      * @param array $groupIds
      * @param EntityManager $entityManager
      */
-    public static function setGroups(User &$user, array $groupIds, EntityManager $entityManager): void
+    public static function setGroups(User $user, array $groupIds, EntityManager $entityManager): void
     {
         $roleIds = [];
         foreach ($groupIds as $groupId) {
-            $group = $entityManager->getRepository('App:Security\Group')->find($groupId);
+            $group = $entityManager->getRepository(EntityConstant::GROUP)->find($groupId);
             if ($group instanceof Group) {
                 $roles = $group->getRolesCollection();
                 foreach ($roles as $role) {
@@ -42,10 +43,10 @@ class UserHelper
      * @param array $roleIds
      * @param EntityManager $entityManager
      */
-    public static function setRoles(User &$user, array $roleIds, EntityManager $entityManager): void
+    public static function setRoles(User $user, array $roleIds, EntityManager $entityManager): void
     {
         foreach ($roleIds as $roleId) {
-            $role = $entityManager->getRepository('App:Security\Role')->find($roleId);
+            $role = $entityManager->getRepository(EntityConstant::ROLE)->find($roleId);
             if ($role instanceof Role) {
                 $user->setRole($role);
             }

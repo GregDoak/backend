@@ -4,7 +4,6 @@ namespace App\Helper;
 
 use App\Entity\Security\Group;
 use App\Entity\Security\Role;
-use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -18,7 +17,7 @@ class GroupHelper
      * @param array $roleIds
      * @param EntityManager $entityManager
      */
-    public static function setRoles(Group &$group, array $roleIds, EntityManager $entityManager): void
+    public static function setRoles(Group $group, array $roleIds, EntityManager $entityManager): void
     {
         $roles = $group->getRolesCollection()->getValues();
         $source = array_map(
@@ -35,10 +34,10 @@ class GroupHelper
         foreach ($actions as $action) {
             $role = $entityManager->getRepository('App:Security\Role')->find($action);
             if ($role instanceof Role) {
-                if (in_array($action, $add)) {
+                if (\in_array($action, $add, true)) {
                     $group->setRole($role);
                 }
-                if (in_array($action, $remove)) {
+                if (\in_array($action, $remove, true)) {
                     $group->removeRole($role);
                 }
             }

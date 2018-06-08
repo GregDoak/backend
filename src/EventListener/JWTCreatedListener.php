@@ -34,6 +34,9 @@ class JWTCreatedListener
     public function onJWTCreated(JWTCreatedEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
+        if ($request === null) {
+            throw new CustomUserMessageAuthenticationException('An error has occurred processing your request.');
+        }
 
         /** @var User $user */
         $user = $event->getUser();

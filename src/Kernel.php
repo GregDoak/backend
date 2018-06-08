@@ -46,6 +46,7 @@ class Kernel extends BaseKernel
      */
     public function registerBundles()
     {
+        /** @noinspection PhpIncludeInspection */
         $contents = require $this->getProjectDir().'/config/bundles.php';
         foreach ((array)$contents as $class => $environments) {
             if (isset($environments['all']) || isset($environments[$this->environment])) {
@@ -59,7 +60,7 @@ class Kernel extends BaseKernel
      * @param LoaderInterface $loader
      * @throws \Exception
      */
-    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
+    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         $container->setParameter('container.autowiring.strict_mode', true);
         $container->setParameter('container.dumper.inline_class_loader', true);
@@ -76,15 +77,16 @@ class Kernel extends BaseKernel
      * @param RouteCollectionBuilder $routes
      * @throws \Symfony\Component\Config\Exception\FileLoaderLoadException
      */
-    protected function configureRoutes(RouteCollectionBuilder $routes)
+    protected function configureRoutes(RouteCollectionBuilder $routes): void
     {
+        $routeDirectory = 'routes';
         $confDir = $this->getProjectDir().'/config';
-        if (is_dir($confDir.'/routes/')) {
-            $routes->import($confDir.'/routes/*'.self::CONFIG_EXTS, '/', 'glob');
+        if (is_dir($confDir.'/'.$routeDirectory.'/')) {
+            $routes->import($confDir.'/'.$routeDirectory.'/*'.self::CONFIG_EXTS, '/', 'glob');
         }
-        if (is_dir($confDir.'/routes/'.$this->environment)) {
-            $routes->import($confDir.'/routes/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
+        if (is_dir($confDir.'/'.$routeDirectory.'/'.$this->environment)) {
+            $routes->import($confDir.'/'.$routeDirectory.'/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
         }
-        $routes->import($confDir.'/routes'.self::CONFIG_EXTS, '/', 'glob');
+        $routes->import($confDir.'/'.$routeDirectory.self::CONFIG_EXTS, '/', 'glob');
     }
 }

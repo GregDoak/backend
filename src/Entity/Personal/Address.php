@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\Personal\AddressRepository")
  * @ORM\Table(name="addresses")
  */
-class Address
+class Address //NOSONAR
 {
     /**
      * @ORM\Id

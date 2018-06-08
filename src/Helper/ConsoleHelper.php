@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Constant\AppConstant;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -23,7 +24,7 @@ class ConsoleHelper
         self::$output->writeln(
             [
                 'Beginning script',
-                'Script started, '.self::$start->format('Y-m-d H:i:s'),
+                'Script started, '.self::$start->format(AppConstant::FORMAT_DATETIME),
                 str_pad('', 80, '-', STR_PAD_BOTH),
             ]
         );
@@ -36,7 +37,7 @@ class ConsoleHelper
         self::$output->writeln(
             [
                 str_pad('', 80, '-', STR_PAD_BOTH),
-                'Script ended, '.self::$stop->format('Y-m-d H:i:s'),
+                'Script ended, '.self::$stop->format(AppConstant::FORMAT_DATETIME),
                 'Processed time - '.$difference->format('%H:%I:%S'),
             ]
         );
@@ -57,7 +58,7 @@ class ConsoleHelper
         self::$output->writeln(
             sprintf(
                 '---- %s %s',
-                $now->format('Y-m-d H:i:s'),
+                $now->format(AppConstant::FORMAT_DATETIME),
                 $message
             )
         );

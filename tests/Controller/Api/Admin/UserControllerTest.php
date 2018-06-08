@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserControllerTest extends WebTestCase
 {
-    public function testGetUsers()
+    public function testGetUsers(): void
     {
         $this->client->request('GET', '/api/admin/users.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_OK);
@@ -22,21 +22,21 @@ class UserControllerTest extends WebTestCase
         );
     }
 
-    public function testGetMissingUser()
+    public function testGetMissingUser(): void
     {
         $this->client->request('GET', '/api/admin/role/.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
-        $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testGetInvalidUser()
+    public function testGetInvalidUser(): void
     {
         $this->client->request('GET', '/api/admin/role/INVALID.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
-        $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testGetValidUser()
+    public function testGetValidUser(): void
     {
         $userRepository = $this->entityManager->getRepository('App:Security\User');
 
@@ -56,12 +56,12 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals($content->data->username, $user->getUsername(), 'The user does not match.');
     }
 
-    public function testCreateMissingUser()
+    public function testCreateMissingUser(): void
     {
         $this->client->request('POST', '/api/admin/user.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
-            'danger',
+            AppConstant::DANGER_TYPE,
             UserConstant::CREATE_VALIDATION_ERROR,
             [
                 UserConstant::USERNAME_EMPTY_ERROR,
@@ -70,7 +70,7 @@ class UserControllerTest extends WebTestCase
         );
     }
 
-    public function testCreateInvalidUser()
+    public function testCreateInvalidUser(): void
     {
         $parameters = [
             'username' => 'TEST_USER',
@@ -80,7 +80,7 @@ class UserControllerTest extends WebTestCase
         $this->client->request('POST', '/api/admin/user.json', $parameters, [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
-            'danger',
+            AppConstant::DANGER_TYPE,
             UserConstant::CREATE_VALIDATION_ERROR,
             [
                 sprintf(AppConstant::convertStringToSprintF(UserConstant::PASSWORD_MIN_LENGTH_ERROR), 8),
@@ -88,7 +88,7 @@ class UserControllerTest extends WebTestCase
         );
     }
 
-    public function testCreateValidUser()
+    public function testCreateValidUser(): void
     {
         $parameters = [
             'username' => 'TEST_USER',
@@ -107,7 +107,7 @@ class UserControllerTest extends WebTestCase
         );
     }
 
-    public function testCreateDuplicateUser()
+    public function testCreateDuplicateUser(): void
     {
         $parameters = [
             'username' => 'TEST_USER',
@@ -117,7 +117,7 @@ class UserControllerTest extends WebTestCase
         $this->client->request('POST', '/api/admin/user.json', $parameters, [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
-            'danger',
+            AppConstant::DANGER_TYPE,
             UserConstant::CREATE_VALIDATION_ERROR,
             [
                 sprintf(
@@ -128,37 +128,37 @@ class UserControllerTest extends WebTestCase
         );
     }
 
-    public function testUpdateMissingUser()
+    public function testUpdateMissingUser(): void
     {
     }
 
-    public function testUpdateInvalidUser()
+    public function testUpdateInvalidUser(): void
     {
     }
 
-    public function testUpdateDuplicateUser()
+    public function testUpdateDuplicateUser(): void
     {
     }
 
-    public function testUpdateValidUser()
+    public function testUpdateValidUser(): void
     {
     }
 
-    public function testDeleteMissingUser()
+    public function testDeleteMissingUser(): void
     {
         $this->client->request('DELETE', '/api/admin/user/.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
-        $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testDeleteInvalidUser()
+    public function testDeleteInvalidUser(): void
     {
         $this->client->request('PUT', '/api/admin/user/INVALID.json', [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
-        $this->doMessageTests('danger', AppConstant::HTTP_NOT_FOUND, []);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
-    public function testDeleteValidUser()
+    public function testDeleteValidUser(): void
     {
         $userRepository = $this->entityManager->getRepository('App:Security\User');
 

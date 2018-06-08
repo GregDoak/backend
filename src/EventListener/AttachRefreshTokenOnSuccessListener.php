@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Constant\EntityConstant;
 use App\Entity\Security\JwtRefreshToken;
 use Doctrine\ORM\EntityManager;
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
@@ -52,6 +53,7 @@ class AttachRefreshTokenOnSuccessListener
     /**
      * @param AuthenticationSuccessEvent $event
      * @throws FileNotFoundException
+     * @throws \Exception
      */
     public function attachRefreshToken(AuthenticationSuccessEvent $event): void
     {
@@ -59,7 +61,7 @@ class AttachRefreshTokenOnSuccessListener
         $user = $event->getUser();
         $request = $this->requestStack->getCurrentRequest();
 
-        if ( ! $user instanceof UserInterface) {
+        if ( ! $user instanceof UserInterface || ! $request instanceof Request) {
             return;
         }
 
@@ -69,24 +71,11 @@ class AttachRefreshTokenOnSuccessListener
             $data['data']['refresh_token'] = $refreshTokenString;
         } else {
             $refreshToken = $this->generateToken($request, $user);
-
-            $valid = false;
-            while (false === $valid) {
-                $valid = true;
-                $errors = $this->validator->validate($refreshToken);
-                if ($errors->count() > 0) {
-                    foreach ($errors as $error) {
-                        if ('refreshToken' === $error->getPropertyPath()) {
-                            $valid = false;
-                            $refreshToken->setRefreshToken();
-                        }
-                    }
-                }
-            }
+            $refreshToken = $this->validateToken($refreshToken);
 
             $this->refreshTokenManager->save($refreshToken);
             $data['data']['refresh_token'] = $refreshToken->getRefreshToken();
-            $data['count'] = $data['count'] + 1;
+            $data['count']++;
         }
 
         $event->setData($data);
@@ -97,8 +86,9 @@ class AttachRefreshTokenOnSuccessListener
      * @param UserInterface $user
      * @return JwtRefreshToken
      * @throws FileNotFoundException
+     * @throws \Exception
      */
-    private function generateToken(Request $request, UserInterface $user)
+    private function generateToken(Request $request, UserInterface $user): JwtRefreshToken
     {
         $datetime = new \DateTime();
         $datetime->modify('+'.$this->ttl.' seconds');
@@ -106,7 +96,7 @@ class AttachRefreshTokenOnSuccessListener
         $parser = Parser::create();
         $results = $parser->parse($request->headers->get('User-Agent'));
 
-        $tokenRepository = $this->entityManager->getRepository('App:Security\JwtRefreshToken');
+        $tokenRepository = $this->entityManager->getRepository(EntityConstant::JWT_REFRESH_TOKEN);
         /** @var JwtRefreshToken $refreshToken */
         $refreshToken = $this->refreshTokenManager->create();
         $refreshToken
@@ -127,6 +117,30 @@ class AttachRefreshTokenOnSuccessListener
         }
 
         $refreshToken->setValid($datetime);
+
+        return $refreshToken;
+    }
+
+    /**
+     * @param JwtRefreshToken $refreshToken
+     * @return JwtRefreshToken
+     * @throws \Exception
+     */
+    private function validateToken(JwtRefreshToken $refreshToken): JwtRefreshToken
+    {
+        $valid = false;
+        while ($valid === false) {
+            $valid = true;
+            $errors = $this->validator->validate($refreshToken);
+            if ($errors->count() > 0) {
+                foreach ($errors as $error) {
+                    if ('refreshToken' === $error->getPropertyPath()) {
+                        $valid = false;
+                        $refreshToken->setRefreshToken();
+                    }
+                }
+            }
+        }
 
         return $refreshToken;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Constant\AppConstant;
 use App\Constant\EntityConstant;
 use App\Constant\LabelConstant;
 use App\Entity\Lookup\Gender;
@@ -27,7 +28,6 @@ class InitialiseCommand extends ContainerAwareCommand
     private $entityManager;
     /** @var UserPasswordEncoderInterface $encoder */
     private $encoder;
-    public const SYSTEM_USERNAME = 'system';
 
     /**
      * InitialiseCommand constructor.
@@ -92,7 +92,7 @@ class InitialiseCommand extends ContainerAwareCommand
         $created = 0;
         $records = [
             [
-                LabelConstant::USERNAME => $this->getContainer()->getParameter('app.defaults.system_username'),
+                LabelConstant::USERNAME => AppConstant::SYSTEM_USERNAME,
                 LabelConstant::PASSWORD => \random_bytes(20),
                 LabelConstant::ROLES => ['ROLE_ADMIN'],
             ],
@@ -198,7 +198,7 @@ class InitialiseCommand extends ContainerAwareCommand
         $genderRepository = $this->entityManager->getRepository(EntityConstant::GENDER);
         $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
-        $user = $userRepository->findOneBy([LabelConstant::USERNAME => self::SYSTEM_USERNAME]);
+        $user = $userRepository->findOneBy([LabelConstant::USERNAME => AppConstant::SYSTEM_USERNAME]);
 
         foreach ($records as $record) {
             $gender = $genderRepository->findOneBy([LabelConstant::TITLE => $record]);
@@ -234,7 +234,7 @@ class InitialiseCommand extends ContainerAwareCommand
         $titleRepository = $this->entityManager->getRepository(EntityConstant::TITLE);
         $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
-        $user = $userRepository->findOneBy([LabelConstant::USERNAME => self::SYSTEM_USERNAME]);
+        $user = $userRepository->findOneBy([LabelConstant::USERNAME => AppConstant::SYSTEM_USERNAME]);
 
         foreach ($records as $record) {
             $title = $titleRepository->findOneBy([LabelConstant::TITLE => $record]);

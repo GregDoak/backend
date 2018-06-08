@@ -41,7 +41,7 @@ class RefreshToken
      * @param $providerKey
      * @param $ttlUpdate
      */
-    public function __construct(
+    public function __construct( //NOSONAR
         RefreshTokenAuthenticator $authenticator,
         RefreshTokenProvider $provider,
         AuthenticationSuccessHandler $successHandler,
@@ -76,8 +76,8 @@ class RefreshToken
                 $this->provider,
                 $this->providerKey
             );
-        } catch (AuthenticationException $e) {
-            return $this->failureHandler->onAuthenticationFailure($request, $e);
+        } catch (AuthenticationException $exception) {
+            return $this->failureHandler->onAuthenticationFailure($request, $exception);
         }
 
         $refreshToken = $this->refreshTokenManager->get($preAuthenticatedToken->getCredentials());
