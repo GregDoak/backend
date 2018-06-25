@@ -7,7 +7,7 @@
     "data-dog/audit-bundle": "^0.1.10",
     "friendsofsymfony/rest-bundle": "^2.3",
     "gesdinet/jwt-refresh-token-bundle": "^0.3.2",
-    "greg-doak/cron-bundle": "dev-master",
+    "greg-doak/cron-bundle": "^1.0@dev",
     "jms/serializer-bundle": "^2.3",
     "lexik/jwt-authentication-bundle": "^2.4",
     "nelmio/cors-bundle": "^1.5",
@@ -77,11 +77,5 @@
       "id": "01C1WWR27ZWS5KK2ARRXXMX3JF",
       "allow-contrib": false
     }
-  },
-  "repositories": [
-    {
-      "url": "https://github.com/GregDoak/CronBundle.git",
-      "type": "git"
-    }
-  ]
+  }
 }

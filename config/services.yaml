@@ -5,7 +5,7 @@ imports:
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    gregdoak.cron.run_on_request: true
+    gregdoak.cron.run_on_request: '%env(CRON_RUN_ON_REQUEST)%'
     jms_serializer.camel_case_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
     app.defaults.username: '%env(resolve:APP_DEFAULT_USERNAME)%'
     app.defaults.password: '%env(resolve:APP_DEFAULT_PASSWORD)%'

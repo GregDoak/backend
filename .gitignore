@@ -24,3 +24,7 @@
 /phpunit.xml
 /coverage
 ###< symfony/phpunit-bridge ###
+
+##> doctrine/data-fixtures ###
+/src/DataFixtures/
+##< doctrine/data-fixtures ###

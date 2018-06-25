@@ -60,15 +60,15 @@ class InitialiseCommand extends ContainerAwareCommand
     {
         ConsoleHelper::$output = $output;
 
-        $doctrineMigrationsDiff = $this->getApplication()->find('doctrine:migrations:diff');
+        $doctrineDatabaseCreate = $this->getApplication()->find('doctrine:database:create');
         $doctrineMigrationsMigrate = $this->getApplication()->find('doctrine:migrations:migrate');
 
         try {
 
-            $doctrineMigrationsDiff->run($input, $output);
-            $doctrineMigrationsMigrate->run($input, $output);
-
             ConsoleHelper::header();
+
+            $doctrineDatabaseCreate->run($input, $output);
+            $doctrineMigrationsMigrate->run($input, $output);
 
             $this->initialiseUsers();
             ConsoleHelper::outputEmptyLine();
