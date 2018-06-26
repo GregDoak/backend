@@ -2,7 +2,6 @@
 
 namespace App\Entity\Security;
 
-use App\Entity\Personal\Person;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
@@ -68,12 +67,6 @@ class User implements UserInterface //NOSONAR
      * @var \DateTime
      */
     protected $passwordCreatedOn;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Personal\Person", cascade={"persist"})
-     * @ORM\JoinColumn(name="person", referencedColumnName="id", nullable=true)
-     * @var Person
-     */
-    protected $person;
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @var \DateTime
@@ -225,25 +218,6 @@ class User implements UserInterface //NOSONAR
     public function setPasswordCreatedOn(): User
     {
         $this->passwordCreatedOn = new \DateTime();
-
-        return $this;
-    }
-
-    /**
-     * @return null|Person
-     */
-    public function getPerson(): ?Person
-    {
-        return $this->person;
-    }
-
-    /**
-     * @param Person $person
-     * @return User
-     */
-    public function setPerson(Person $person): User
-    {
-        $this->person = $person;
 
         return $this;
     }

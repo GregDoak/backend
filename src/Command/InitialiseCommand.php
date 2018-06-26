@@ -72,9 +72,6 @@ class InitialiseCommand extends ContainerAwareCommand
 
             $this->initialiseUsers();
             ConsoleHelper::outputEmptyLine();
-            $this->initialiseGender();
-            ConsoleHelper::outputEmptyLine();
-            $this->initialiseTitles();
 
             ConsoleHelper::footer();
         } catch (\Exception $exception) {
@@ -183,76 +180,6 @@ class InitialiseCommand extends ContainerAwareCommand
         $this->entityManager->flush();
 
         ConsoleHelper::outputMessage($created.' security role records created.');
-    }
-
-    private function initialiseGender(): void
-    {
-        ConsoleHelper::outputMessage('Initialise Gender Started...');
-
-        $created = 0;
-        $records = [
-            'Female',
-            'Male',
-        ];
-
-        $genderRepository = $this->entityManager->getRepository(EntityConstant::GENDER);
-        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
-
-        $user = $userRepository->findOneBy([LabelConstant::USERNAME => AppConstant::SYSTEM_USERNAME]);
-
-        foreach ($records as $record) {
-            $gender = $genderRepository->findOneBy([LabelConstant::TITLE => $record]);
-            if ($gender === null && $user instanceof User) {
-                $gender = new Gender();
-                $gender
-                    ->setTitle($record)
-                    ->setCreatedBy($user);
-                $created++;
-
-                $this->entityManager->persist($gender);
-            }
-        }
-
-        $this->entityManager->flush();
-
-        ConsoleHelper::outputMessage($created.' gender records created.');
-        ConsoleHelper::outputMessage('Initialise Gender Ended...');
-    }
-
-    private function initialiseTitles(): void
-    {
-        ConsoleHelper::outputMessage('Initialise Title Started...');
-
-        $created = 0;
-        $records = [
-            'Mr',
-            'Mrs',
-            'Ms',
-            'Miss',
-        ];
-
-        $titleRepository = $this->entityManager->getRepository(EntityConstant::TITLE);
-        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
-
-        $user = $userRepository->findOneBy([LabelConstant::USERNAME => AppConstant::SYSTEM_USERNAME]);
-
-        foreach ($records as $record) {
-            $title = $titleRepository->findOneBy([LabelConstant::TITLE => $record]);
-            if ($title === null && $user instanceof User) {
-                $title = new Title();
-                $title
-                    ->setTitle($record)
-                    ->setCreatedBy($user);
-                $created++;
-
-                $this->entityManager->persist($title);
-            }
-        }
-
-        $this->entityManager->flush();
-
-        ConsoleHelper::outputMessage($created.' title records created.');
-        ConsoleHelper::outputMessage('Initialise Title Ended...');
     }
 }
 
