@@ -5,15 +5,21 @@ namespace App\Tests\Controller\Api\Admin;
 use App\Constant\AppConstant;
 use App\Constant\Admin\UserConstant;
 use App\Constant\EntityConstant;
+use App\Constant\LabelConstant;
 use App\Entity\Security\User;
 use App\Tests\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserControllerTest extends WebTestCase
 {
+    private const API_URL_SINGLE = '/api/admin/user';
+    private const TYPE = 'json';
+    private const USERNAME = 'TEST_USER';
+
     public function testGetUsers(): void
     {
-        $this->client->request('GET', '/api/admin/users.json', [], [], $this->getJsonHeaders());
+        $url = '/api/admin/users.'.self::TYPE;
+        $this->client->request('GET', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_OK);
 
         $content = $this->getResponseContent();
@@ -25,21 +31,23 @@ class UserControllerTest extends WebTestCase
 
     public function testGetMissingUser(): void
     {
-        $this->client->request('GET', '/api/admin/role/.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'/.'.self::TYPE;
+        $this->client->request('GET', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
     public function testGetInvalidUser(): void
     {
-        $this->client->request('GET', '/api/admin/role/INVALID.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'/INVALID.'.self::TYPE;
+        $this->client->request('GET', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
     public function testGetValidUser(): void
     {
-        $userRepository = $this->entityManager->getRepository('App:Security\User');
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         /** @var User $user */
         $user = $userRepository->getUserByUsername('system');
@@ -49,7 +57,8 @@ class UserControllerTest extends WebTestCase
             'The system user was not found in the database.  Try running php bin\console app:initialise'
         );
 
-        $this->client->request('GET', '/api/admin/user/'.$user->getId().'.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'/'.$user->getId().'.'.self::TYPE;
+        $this->client->request('GET', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_OK);
         $this->doEntityTests(true, 1);
 
@@ -59,7 +68,8 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateMissingUser(): void
     {
-        $this->client->request('POST', '/api/admin/user.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'.'.self::TYPE;
+        $this->client->request('POST', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
             AppConstant::DANGER_TYPE,
@@ -74,11 +84,12 @@ class UserControllerTest extends WebTestCase
     public function testCreateInvalidUser(): void
     {
         $parameters = [
-            'username' => 'TEST_USER',
-            'password' => 'short',
-            'roles' => 'ROLE_INVALID',
+            LabelConstant::USERNAME => self::USERNAME,
+            LabelConstant::PASSWORD => 'short',
+            LabelConstant::ROLES => 'ROLE_INVALID',
         ];
-        $this->client->request('POST', '/api/admin/user.json', $parameters, [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'.'.self::TYPE;
+        $this->client->request('POST', $url, $parameters, [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
             AppConstant::DANGER_TYPE,
@@ -92,17 +103,18 @@ class UserControllerTest extends WebTestCase
     public function testCreateValidUser(): void
     {
         $parameters = [
-            'username' => 'TEST_USER',
-            'password' => 'C0mplic@t3dP455w0rd!',
-            'roles' => 'ROLE_USER',
+            LabelConstant::USERNAME => self::USERNAME,
+            LabelConstant::PASSWORD => 'C0mplic@t3dP455w0rd!',
+            LabelConstant::ROLES => 'ROLE_USER',
         ];
-        $this->client->request('POST', '/api/admin/user.json', $parameters, [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'.'.self::TYPE;
+        $this->client->request('POST', $url, $parameters, [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_CREATED);
         $this->doMessageTests(
-            'success',
+            AppConstant::SUCCESS_TYPE,
             sprintf(
                 AppConstant::convertStringToSprintF(UserConstant::CREATE_SUCCESS_MESSAGE),
-                $parameters['username']
+                $parameters[LabelConstant::USERNAME]
             ),
             []
         );
@@ -111,11 +123,12 @@ class UserControllerTest extends WebTestCase
     public function testCreateDuplicateUser(): void
     {
         $parameters = [
-            'username' => 'TEST_USER',
-            'password' => 'C0mplic@t3dP455w0rd!',
-            'roles' => 'ROLE_USER',
+            LabelConstant::USERNAME => self::USERNAME,
+            LabelConstant::PASSWORD => 'C0mplic@t3dP455w0rd!',
+            LabelConstant::ROLES => 'ROLE_USER',
         ];
-        $this->client->request('POST', '/api/admin/user.json', $parameters, [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'.'.self::TYPE;
+        $this->client->request('POST', $url, $parameters, [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
             AppConstant::DANGER_TYPE,
@@ -123,7 +136,7 @@ class UserControllerTest extends WebTestCase
             [
                 sprintf(
                     AppConstant::convertStringToSprintF(UserConstant::UNIQUE_ENTITY_ERROR),
-                    '"'.$parameters['username'].'"'
+                    '"'.$parameters[LabelConstant::USERNAME].'"'
                 ),
             ]
         );
@@ -131,7 +144,8 @@ class UserControllerTest extends WebTestCase
 
     public function testUpdateMissingUser(): void
     {
-        $this->client->request('PUT', '/api/admin/user/.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'/.'.self::TYPE;
+        $this->client->request('PUT', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
@@ -141,12 +155,13 @@ class UserControllerTest extends WebTestCase
         $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         /** @var User $user */
-        $user = $userRepository->getUserByUsername('TEST_USER');
+        $user = $userRepository->getUserByUsername(self::USERNAME);
 
         $parameters = [
-            'username' => 'a',
+            LabelConstant::USERNAME => 'a',
         ];
-        $this->client->request('PUT', '/api/admin/user/'.$user->getId().'.json', $parameters, [],
+        $url = self::API_URL_SINGLE.'/'.$user->getId().'.'.self::TYPE;
+        $this->client->request('PUT', $url, $parameters, [],
             $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
@@ -163,12 +178,13 @@ class UserControllerTest extends WebTestCase
         $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         /** @var User $user */
-        $user = $userRepository->getUserByUsername('TEST_USER');
+        $user = $userRepository->getUserByUsername(self::USERNAME);
 
         $parameters = [
-            'username' => 'system',
+            LabelConstant::USERNAME => 'system',
         ];
-        $this->client->request('PUT', '/api/admin/user/'.$user->getId().'.json', $parameters, [],
+        $url = self::API_URL_SINGLE.'/'.$user->getId().'.'.self::TYPE;
+        $this->client->request('PUT', $url, $parameters, [],
             $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
         $this->doMessageTests(
@@ -176,7 +192,7 @@ class UserControllerTest extends WebTestCase
             UserConstant::UPDATE_VALIDATION_ERROR,
             [
                 sprintf(AppConstant::convertStringToSprintF(UserConstant::UNIQUE_ENTITY_ERROR),
-                    '"'.$parameters['username'].'"'),
+                    '"'.$parameters[LabelConstant::USERNAME].'"'),
             ]
         );
     }
@@ -186,16 +202,17 @@ class UserControllerTest extends WebTestCase
         $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         /** @var User $user */
-        $user = $userRepository->getUserByUsername('TEST_USER');
+        $user = $userRepository->getUserByUsername(self::USERNAME);
 
         $parameters = [
-            'username' => $user->getUsername().'_UPDATE',
+            LabelConstant::USERNAME => $user->getUsername().'_UPDATE',
         ];
-        $this->client->request('PUT', '/api/admin/user/'.$user->getId().'.json', $parameters, [],
+        $url = self::API_URL_SINGLE.'/'.$user->getId().'.'.self::TYPE;
+        $this->client->request('PUT', $url, $parameters, [],
             $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_OK);
         $this->doMessageTests(
-            'success',
+            AppConstant::SUCCESS_TYPE,
             sprintf(UserConstant::UPDATE_SUCCESS_MESSAGE, $user->getUsername()),
             []
         );
@@ -203,14 +220,16 @@ class UserControllerTest extends WebTestCase
 
     public function testDeleteMissingUser(): void
     {
-        $this->client->request('DELETE', '/api/admin/user/.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'/.'.self::TYPE;
+        $this->client->request('DELETE', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
     public function testDeleteInvalidUser(): void
     {
-        $this->client->request('PUT', '/api/admin/user/INVALID.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'/INVALID.'.self::TYPE;
+        $this->client->request('PUT', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_NOT_FOUND);
         $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
@@ -227,10 +246,11 @@ class UserControllerTest extends WebTestCase
             'The TEST_USER was not found in the database.  Try running php bin\console app:initialise'
         );
 
-        $this->client->request('DELETE', '/api/admin/user/'.$user->getId().'.json', [], [], $this->getJsonHeaders());
+        $url = self::API_URL_SINGLE.'/'.$user->getId().'.'.self::TYPE;
+        $this->client->request('DELETE', $url, [], [], $this->getJsonHeaders());
         $this->doHeaderTests(Response::HTTP_OK);
         $this->doMessageTests(
-            'success',
+            AppConstant::SUCCESS_TYPE,
             sprintf(UserConstant::DELETE_SUCCESS_MESSAGE, $user->getUsername()),
             []
         );
