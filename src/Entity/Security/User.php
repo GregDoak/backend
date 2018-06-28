@@ -34,7 +34,7 @@ class User implements UserInterface //NOSONAR
      * @Assert\NotNull(message=USER_USERNAME_EMPTY_ERROR)
      * @Assert\NotBlank(message=USER_USERNAME_EMPTY_ERROR)
      * @Assert\Length(
-     *      min="1",
+     *      min="3",
      *      max="255",
      *      minMessage=USER_USERNAME_MIN_LENGTH_ERROR,
      *      maxMessage=USER_USERNAME_MAX_LENGTH_ERROR

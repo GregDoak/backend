@@ -4,6 +4,7 @@ namespace App\Tests\Controller\Api\Admin;
 
 use App\Constant\AppConstant;
 use App\Constant\Admin\UserConstant;
+use App\Constant\EntityConstant;
 use App\Entity\Security\User;
 use App\Tests\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -130,18 +131,74 @@ class UserControllerTest extends WebTestCase
 
     public function testUpdateMissingUser(): void
     {
+        $this->client->request('PUT', '/api/admin/user/.json', [], [], $this->getJsonHeaders());
+        $this->doHeaderTests(Response::HTTP_NOT_FOUND);
+        $this->doMessageTests(AppConstant::DANGER_TYPE, AppConstant::HTTP_NOT_FOUND, []);
     }
 
     public function testUpdateInvalidUser(): void
     {
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
+
+        /** @var User $user */
+        $user = $userRepository->getUserByUsername('TEST_USER');
+
+        $parameters = [
+            'username' => 'a',
+        ];
+        $this->client->request('PUT', '/api/admin/user/'.$user->getId().'.json', $parameters, [],
+            $this->getJsonHeaders());
+        $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
+        $this->doMessageTests(
+            AppConstant::DANGER_TYPE,
+            UserConstant::UPDATE_VALIDATION_ERROR,
+            [
+                sprintf(AppConstant::convertStringToSprintF(UserConstant::USERNAME_MIN_LENGTH_ERROR), 3),
+            ]
+        );
     }
 
     public function testUpdateDuplicateUser(): void
     {
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
+
+        /** @var User $user */
+        $user = $userRepository->getUserByUsername('TEST_USER');
+
+        $parameters = [
+            'username' => 'system',
+        ];
+        $this->client->request('PUT', '/api/admin/user/'.$user->getId().'.json', $parameters, [],
+            $this->getJsonHeaders());
+        $this->doHeaderTests(Response::HTTP_BAD_REQUEST);
+        $this->doMessageTests(
+            AppConstant::DANGER_TYPE,
+            UserConstant::UPDATE_VALIDATION_ERROR,
+            [
+                sprintf(AppConstant::convertStringToSprintF(UserConstant::UNIQUE_ENTITY_ERROR),
+                    '"'.$parameters['username'].'"'),
+            ]
+        );
     }
 
     public function testUpdateValidUser(): void
     {
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
+
+        /** @var User $user */
+        $user = $userRepository->getUserByUsername('TEST_USER');
+
+        $parameters = [
+            'username' => $user->getUsername().'_UPDATE',
+        ];
+        $this->client->request('PUT', '/api/admin/user/'.$user->getId().'.json', $parameters, [],
+            $this->getJsonHeaders());
+        $this->doHeaderTests(Response::HTTP_OK);
+        $this->doMessageTests(
+            'success',
+            sprintf(UserConstant::UPDATE_SUCCESS_MESSAGE, $user->getUsername()),
+            []
+        );
     }
 
     public function testDeleteMissingUser(): void
@@ -160,10 +217,10 @@ class UserControllerTest extends WebTestCase
 
     public function testDeleteValidUser(): void
     {
-        $userRepository = $this->entityManager->getRepository('App:Security\User');
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         /** @var User $role */
-        $user = $userRepository->getUserByUsername('TEST_USER');
+        $user = $userRepository->getUserByUsername('TEST_USER_UPDATE');
 
         $this->assertNotNull(
             $user,

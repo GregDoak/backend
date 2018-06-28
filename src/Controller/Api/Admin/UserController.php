@@ -160,7 +160,7 @@ class UserController extends ApiController
 
         try {
             $user
-                ->setUsername($request->get(LabelConstant::USERNAME))
+                ->setUsername(trim($request->get(LabelConstant::USERNAME)))
                 ->setPlainPassword($user->getPassword())
                 ->setUpdatedBy($this->authenticatedUser)
                 ->setUpdatedOn()
