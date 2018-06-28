@@ -5,8 +5,6 @@ namespace App\Command;
 use App\Constant\AppConstant;
 use App\Constant\EntityConstant;
 use App\Constant\LabelConstant;
-use App\Entity\Lookup\Gender;
-use App\Entity\Lookup\Title;
 use App\Entity\Security\Role;
 use App\Entity\Security\User;
 use App\Helper\ConsoleHelper;
@@ -24,10 +22,10 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class InitialiseCommand extends ContainerAwareCommand
 {
-    /** @var EntityManagerInterface $entityManager */
-    private $entityManager;
     /** @var UserPasswordEncoderInterface $encoder */
     private $encoder;
+    /** @var EntityManagerInterface $entityManager */
+    private $entityManager;
 
     /**
      * InitialiseCommand constructor.
@@ -58,6 +56,7 @@ class InitialiseCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
+        ConsoleHelper::$input = $input;
         ConsoleHelper::$output = $output;
 
         $doctrineDatabaseCreate = $this->getApplication()->find('doctrine:database:create');

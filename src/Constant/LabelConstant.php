@@ -26,6 +26,7 @@ class LabelConstant
     public const COUNT = 'count';
     public const DATA = 'data';
     public const DESCRIPTION = 'description';
+    public const DESTINATION = 'destination';
     public const ID = 'id';
     public const INTERVAL_CONTEXT = 'intervalContext';
     public const INTERVAL_PERIOD = 'intervalPeriod';

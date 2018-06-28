@@ -11,6 +11,7 @@ use FOS\RestBundle\View\View;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -59,6 +60,11 @@ class ExceptionController extends FOSRestController
         $this->username = $authenticatedUser instanceof User ? $authenticatedUser->getUsername() : 'Unknown';
 
         switch ($exception) {
+            case $exception instanceof BadRequestHttpException:
+                $code = Response::HTTP_BAD_REQUEST;
+                $message = $exception->getMessage();
+                $messages = [];
+                break;
             case $exception instanceof AccessDeniedHttpException:
                 $code = Response::HTTP_FORBIDDEN;
                 $message = $exception->getMessage();
@@ -84,6 +90,15 @@ class ExceptionController extends FOSRestController
                 $message = AppConstant::DEFAULT_EXCEPTION;
                 $messages = [];
         }
+
+        $this->logger->error(
+            \get_class($exception),
+            [
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+                'username' => $this->username,
+            ]
+        );
 
         $this->logger->error(
             \get_class($exception),

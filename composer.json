@@ -19,7 +19,6 @@
     "symfony/flex": "^1.0",
     "symfony/framework-bundle": "^4.0",
     "symfony/lts": "^4@dev",
-    "symfony/maker-bundle": "^1.0",
     "symfony/monolog-bundle": "^3.1",
     "symfony/orm-pack": "^1.0",
     "symfony/security-bundle": "^4.0",
@@ -31,6 +30,7 @@
   "require-dev": {
     "symfony/browser-kit": "^4.0",
     "symfony/dotenv": "^4.0",
+    "symfony/maker-bundle": "^1.0",
     "symfony/phpunit-bridge": "^4.0",
     "symfony/thanks": "^1.0"
   },
@@ -62,11 +62,16 @@
       "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
       "security-checker security:check": "script"
     },
+    "generate-environment-files": [
+      "cp -n phpunit.xml.dist phpunit.xml"
+    ],
     "post-install-cmd": [
-      "@auto-scripts"
+      "@auto-scripts",
+      "@generate-environment-files"
     ],
     "post-update-cmd": [
-      "@auto-scripts"
+      "@auto-scripts",
+      "@generate-environment-files"
     ]
   },
   "conflict": {

@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class WebTestCase
@@ -16,12 +17,15 @@ class WebTestCase extends \Symfony\Bundle\FrameworkBundle\Test\WebTestCase
     public $client;
     /** @var EntityManager $entityManager */
     public $entityManager;
+    /** @var ValidatorInterface $validator */
+    public $validator;
 
     public function setUp()
     {
         $this->client = static::createClient();
         $this->authenticationToken = $this->getAuthenticationToken();
         $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
+        $this->validator = $this->client->getContainer()->get('validator');
     }
 
     /**

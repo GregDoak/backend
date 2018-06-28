@@ -14,7 +14,8 @@
         <env name="SHELL_VERBOSITY" value="-1"/>
 
         <env name="APP_DEFAULT_USERNAME" value="admin"/>
-        <env name="APP_DEFAULT_PASSWORD" value="Password"/>
+        <env name="APP_DEFAULT_PASSWORD" value="ChangeThisPassword"/>
+        <env name="CRON_RUN_ON_REQUEST" value="false"/>
 
         <!-- ###+ symfony/framework-bundle ### -->
         <env name="APP_ENV" value="test"/>
@@ -25,12 +26,12 @@
         <!-- Key paths should be relative to the project directory -->
         <env name="JWT_PRIVATE_KEY_PATH" value="var/jwt/private.pem"/>
         <env name="JWT_PUBLIC_KEY_PATH" value="var/jwt/public.pem"/>
-        <env name="JWT_PASSPHRASE" value="testing"/>
+        <env name="JWT_PASSPHRASE" value="JWT_PASSPHRASE"/>
         <!-- ###- lexik/jwt-authentication-bundle ### -->
 
         <!-- ###+ doctrine/doctrine-bundle ### -->
         <!-- Format described at http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url -->
-        <env name="DATABASE_URL" value="mysql://db_user_app:HCfxeueS8RnehyZM8qGxkuHDaBkeNRTs@127.0.0.1:3306/app"/>
+        <env name="DATABASE_URL" value="mysql://DB_USERNAME:DB_PASSWORD@127.0.0.1:3306/app"/>
         <!-- ###- doctrine/doctrine-bundle ### -->
 
         <!-- ###+ nelmio/cors-bundle ### -->

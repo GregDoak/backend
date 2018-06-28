@@ -1,6 +1,6 @@
 gesdinet_jwt_refresh_token:
     path:     /api/authentication/refresh
-    defaults: { _controller: gesdinet.jwtrefreshtoken:refresh }
+    defaults: { _controller: gesdinet.jwtrefreshtoken::refresh }
 
 api_authentication_login:
     path: /api/authentication/login

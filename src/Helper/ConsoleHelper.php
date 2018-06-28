@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use App\Constant\AppConstant;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -11,6 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ConsoleHelper
 {
+    /** @var InputInterface $input */
+    public static $input;
     /** @var OutputInterface $output */
     public static $output;
     /** @var \DateTime $start */
