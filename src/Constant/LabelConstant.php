@@ -27,6 +27,7 @@ class LabelConstant
     public const DATA = 'data';
     public const DESCRIPTION = 'description';
     public const DESTINATION = 'destination';
+    public const END_DATE_TIME = 'endDateTime';
     public const ID = 'id';
     public const INTERVAL_CONTEXT = 'intervalContext';
     public const INTERVAL_PERIOD = 'intervalPeriod';
@@ -34,7 +35,7 @@ class LabelConstant
     public const MESSAGES = 'messages';
     public const PRIORITY = 'priority';
     public const SOURCE = 'source';
-    public const START_DATE = 'startDate';
+    public const START_DATE_TIME = 'startDateTime';
     public const STATUS = 'status';
     public const TABLE = 'table';
     public const TARGET = 'target';
@@ -43,6 +44,7 @@ class LabelConstant
     public const TYPE = 'type';
     public const UPDATED_BY = 'updatedBy';
     public const UPDATED_ON = 'updatedOn';
+    public const USERS = 'users';
 
     //HTTP headers
     public const CONTENT_TYPE = 'CONTENT_TYPE';

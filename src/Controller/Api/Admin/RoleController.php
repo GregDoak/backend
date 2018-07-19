@@ -8,6 +8,7 @@ use App\Constant\EntityConstant;
 use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\Role;
+use App\Exception\ValidationException;
 use App\Helper\ResponseHelper;
 use App\Repository\Security\RoleRepository;
 use Doctrine\ORM\EntityManager;
@@ -113,7 +114,7 @@ class RoleController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),
@@ -170,7 +171,7 @@ class RoleController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),

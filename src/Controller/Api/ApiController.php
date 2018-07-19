@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Security\User;
+use App\Exception\ValidationException;
 use FOS\RestBundle\Controller\FOSRestController;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -45,9 +46,9 @@ class ApiController extends FOSRestController
     }
 
     /**
-     * @param mixed $entity
+     * @param $entity
      * @param string $message
-     * @throws \UnexpectedValueException
+     * @throws ValidationException
      */
     public function validateEntity($entity, string $message): void
     {
@@ -59,7 +60,7 @@ class ApiController extends FOSRestController
         }
 
         if (\count($this->getEntityErrors()) > 0) {
-            throw new \UnexpectedValueException($message, 400);
+            throw new ValidationException($message);
         }
     }
 

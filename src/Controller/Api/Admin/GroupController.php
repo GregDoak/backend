@@ -8,6 +8,7 @@ use App\Constant\EntityConstant;
 use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\Group;
+use App\Exception\ValidationException;
 use App\Helper\GroupHelper;
 use App\Helper\ResponseHelper;
 use App\Repository\Security\GroupRepository;
@@ -120,7 +121,7 @@ class GroupController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),
@@ -179,7 +180,7 @@ class GroupController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),

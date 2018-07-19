@@ -7,6 +7,7 @@ use App\Constant\EntityConstant;
 use App\Constant\LabelConstant;
 use App\Constant\My\PasswordConstant;
 use App\Controller\Api\ApiController;
+use App\Exception\ValidationException;
 use App\Helper\ResponseHelper;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
@@ -82,7 +83,7 @@ class PasswordController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),
                 $exception->getMessage(),

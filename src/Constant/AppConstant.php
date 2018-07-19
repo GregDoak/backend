@@ -7,6 +7,7 @@ use App\Constant\Admin\CronConstant;
 use App\Constant\Admin\GroupConstant;
 use App\Constant\Admin\RoleConstant;
 use App\Constant\Admin\UserConstant;
+use App\Constant\My\EventConstant;
 use App\Constant\My\PasswordConstant;
 use App\Constant\My\ProfileConstant;
 use App\Constant\My\TokenConstant;
@@ -67,6 +68,7 @@ class AppConstant
         AuditConstant::loadConstants();
         AuthenticationConstant::loadConstants();
         CronConstant::loadConstants();
+        EventConstant::loadConstants();
         GroupConstant::loadConstants();
         PasswordConstant::loadConstants();
         ProfileConstant::loadConstants();

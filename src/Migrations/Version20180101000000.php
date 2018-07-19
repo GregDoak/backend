@@ -5,7 +5,7 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-final class Version00000000000000 extends AbstractMigration
+final class Version20180101000000 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
@@ -43,6 +43,12 @@ final class Version00000000000000 extends AbstractMigration
         $this->addSql('ALTER TABLE audit_logs ADD CONSTRAINT FK_D62F2858953C1C61 FOREIGN KEY (source_id) REFERENCES audit_associations (id)');
         $this->addSql('ALTER TABLE audit_logs ADD CONSTRAINT FK_D62F2858158E0B66 FOREIGN KEY (target_id) REFERENCES audit_associations (id)');
         $this->addSql('ALTER TABLE audit_logs ADD CONSTRAINT FK_D62F28588C082A2E FOREIGN KEY (blame_id) REFERENCES audit_associations (id)');
+        $this->addSql('CREATE TABLE events (id CHAR(36) NOT NULL COMMENT \'(DC2Type:guid)\', created_by CHAR(36) DEFAULT NULL COMMENT \'(DC2Type:guid)\', updated_by CHAR(36) DEFAULT NULL COMMENT \'(DC2Type:guid)\', description VARCHAR(1024) NOT NULL, start_date_time DATETIME NOT NULL, end_date_time DATETIME NOT NULL, created_on DATETIME NOT NULL, updated_on DATETIME DEFAULT NULL, active TINYINT(1) NOT NULL, INDEX IDX_5387574ADE12AB56 (created_by), INDEX IDX_5387574A16FE72E1 (updated_by), INDEX IDX_5387574A87826A77DC9AADB9DE12AB56 (start_date_time, end_date_time, created_by), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB;');
+        $this->addSql('CREATE TABLE events_users (event_id CHAR(36) NOT NULL COMMENT \'(DC2Type:guid)\', user_id CHAR(36) NOT NULL COMMENT \'(DC2Type:guid)\', INDEX IDX_A43F6DCF71F7E88B (event_id), INDEX IDX_A43F6DCFA76ED395 (user_id), PRIMARY KEY(event_id, user_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE events ADD CONSTRAINT FK_5387574ADE12AB56 FOREIGN KEY (created_by) REFERENCES users (id)');
+        $this->addSql('ALTER TABLE events ADD CONSTRAINT FK_5387574A16FE72E1 FOREIGN KEY (updated_by) REFERENCES users (id)');
+        $this->addSql('ALTER TABLE events_users ADD CONSTRAINT FK_A43F6DCF71F7E88B FOREIGN KEY (event_id) REFERENCES events (id)');
+        $this->addSql('ALTER TABLE events_users ADD CONSTRAINT FK_A43F6DCFA76ED395 FOREIGN KEY (user_id) REFERENCES users (id)');
     }
 
     public function down(Schema $schema): void
@@ -81,5 +87,8 @@ final class Version00000000000000 extends AbstractMigration
         $this->addSql('DROP TABLE cron_job_logs');
         $this->addSql('DROP TABLE audit_associations');
         $this->addSql('DROP TABLE audit_logs');
+        $this->addSql('ALTER TABLE events_users DROP FOREIGN KEY FK_A43F6DCF71F7E88B');
+        $this->addSql('DROP TABLE events');
+        $this->addSql('DROP TABLE events_users');
     }
 }

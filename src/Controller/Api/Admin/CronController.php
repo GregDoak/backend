@@ -7,6 +7,7 @@ use App\Constant\AppConstant;
 use App\Constant\EntityConstant;
 use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
+use App\Exception\ValidationException;
 use App\Helper\ResponseHelper;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
@@ -183,7 +184,7 @@ class CronController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),
@@ -261,7 +262,7 @@ class CronController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),

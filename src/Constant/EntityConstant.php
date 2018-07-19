@@ -12,9 +12,8 @@ class EntityConstant
     public const CRON_JOB = 'GregDoakCronBundle:CronJob';
     public const CRON_JOB_TASK = 'GregDoakCronBundle:CronJobTask';
 
-    // Lookup
-    public const GENDER = 'App:Lookup\Gender';
-    public const TITLE = 'App:Lookup\Title';
+    // My
+    public const EVENT = 'App:My\Event';
 
     // Security
     public const GROUP = 'App:Security\Group';

@@ -8,6 +8,7 @@ use App\Constant\EntityConstant;
 use App\Constant\LabelConstant;
 use App\Controller\Api\ApiController;
 use App\Entity\Security\User;
+use App\Exception\ValidationException;
 use App\Helper\ResponseHelper;
 use App\Helper\UserHelper;
 use App\Repository\Security\UserRepository;
@@ -126,7 +127,7 @@ class UserController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),
@@ -188,7 +189,7 @@ class UserController extends ApiController
                 $this
             );
 
-        } catch (\UnexpectedValueException $exception) {
+        } catch (ValidationException $exception) {
 
             $data = ResponseHelper::buildErrorResponse(
                 $exception->getCode(),
