@@ -16,6 +16,7 @@ class EventType extends AbstractType
     {
         $builder
             ->add(LabelConstant::DESCRIPTION, TextType::class, ['trim' => true])
+            ->add(LabelConstant::LOCATION, TextType::class, ['trim' => true])
             ->add(LabelConstant::START_DATE_TIME, DateTimeType::class,
                 ['format' => 'yyyy-MM-dd HH:mm:ss', 'widget' => 'single_text'])
             ->add(LabelConstant::END_DATE_TIME, DateTimeType::class,

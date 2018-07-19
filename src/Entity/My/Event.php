@@ -35,6 +35,19 @@ class Event // NOSONAR
      */
     protected $description;
     /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotNull(message=EVENT_LOCATION_EMPTY_ERROR)
+     * @Assert\NotBlank(message=EVENT_LOCATION_EMPTY_ERROR)
+     * @Assert\Length(
+     *      min="1",
+     *      max="1024",
+     *      minMessage=EVENT_LOCATION_MIN_LENGTH_ERROR,
+     *      maxMessage=EVENT_LOCATION_MAX_LENGTH_ERROR
+     * )
+     * @var string
+     */
+    protected $location;
+    /**
      * @ORM\Column(type="datetime")
      * @Assert\NotNull(message=EVENT_START_EMPTY_ERROR)
      * @Assert\NotBlank(message=EVENT_START_EMPTY_ERROR)
@@ -120,6 +133,25 @@ class Event // NOSONAR
     public function setDescription(string $description = null): Event
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string|null $location
+     * @return Event
+     */
+    public function setLocation(string $location = null): Event
+    {
+        $this->location = $location;
 
         return $this;
     }

@@ -16,6 +16,9 @@ class EventConstant
     public const DESCRIPTION_EMPTY_ERROR = 'The description is a required field and cannot be empty.';
     public const DESCRIPTION_MIN_LENGTH_ERROR = 'The description must be at least {{ limit }} characters long.';
     public const DESCRIPTION_MAX_LENGTH_ERROR = 'The description cannot be longer than {{ limit }} characters.';
+    public const LOCATION_EMPTY_ERROR = 'The location is a required field and cannot be empty.';
+    public const LOCATION_MIN_LENGTH_ERROR = 'The location must be at least {{ limit }} characters long.';
+    public const LOCATION_MAX_LENGTH_ERROR = 'The location cannot be longer than {{ limit }} characters.';
     public const START_EMPTY_ERROR = 'The start date is a required field and cannot be empty.';
     public const END_EMPTY_ERROR = 'The end date is a required field and cannot be empty.';
     public const END_GREATER_ERROR = 'The end date must be greater than the start date.';
@@ -44,6 +47,9 @@ class EventConstant
         AppConstant::defineConstant('EVENT_DESCRIPTION_EMPTY_ERROR', self::DESCRIPTION_EMPTY_ERROR);
         AppConstant::defineConstant('EVENT_DESCRIPTION_MIN_LENGTH_ERROR', self::DESCRIPTION_MIN_LENGTH_ERROR);
         AppConstant::defineConstant('EVENT_DESCRIPTION_MAX_LENGTH_ERROR', self::DESCRIPTION_MAX_LENGTH_ERROR);
+        AppConstant::defineConstant('EVENT_LOCATION_EMPTY_ERROR', self::LOCATION_EMPTY_ERROR);
+        AppConstant::defineConstant('EVENT_LOCATION_MIN_LENGTH_ERROR', self::LOCATION_MIN_LENGTH_ERROR);
+        AppConstant::defineConstant('EVENT_LOCATION_MAX_LENGTH_ERROR', self::LOCATION_MAX_LENGTH_ERROR);
         AppConstant::defineConstant('EVENT_START_EMPTY_ERROR', self::START_EMPTY_ERROR);
         AppConstant::defineConstant('EVENT_END_EMPTY_ERROR', self::END_EMPTY_ERROR);
         AppConstant::defineConstant('EVENT_END_GREATER_ERROR', self::END_GREATER_ERROR);

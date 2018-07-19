@@ -31,6 +31,7 @@ class LabelConstant
     public const ID = 'id';
     public const INTERVAL_CONTEXT = 'intervalContext';
     public const INTERVAL_PERIOD = 'intervalPeriod';
+    public const LOCATION = 'location';
     public const MESSAGE = 'message';
     public const MESSAGES = 'messages';
     public const PRIORITY = 'priority';

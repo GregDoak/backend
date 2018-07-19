@@ -38,6 +38,7 @@ class EventControllerTest extends WebTestCase
 
         $parameters = [
             LabelConstant::DESCRIPTION => '',
+            LabelConstant::LOCATION => 'Valid Location',
             LabelConstant::START_DATE_TIME => $now->format(AppConstant::FORMAT_DATETIME),
             LabelConstant::END_DATE_TIME => $now->format(AppConstant::FORMAT_DATETIME),
             LabelConstant::USERS => [],
@@ -62,6 +63,7 @@ class EventControllerTest extends WebTestCase
 
         $parameters = [
             LabelConstant::DESCRIPTION => 'Valid Description',
+            LabelConstant::LOCATION => 'Valid Location',
             LabelConstant::START_DATE_TIME => $now->format('Y-m-d'),
             LabelConstant::END_DATE_TIME => $now->format(AppConstant::FORMAT_DATETIME),
             LabelConstant::USERS => [],
@@ -91,6 +93,7 @@ class EventControllerTest extends WebTestCase
 
         $parameters = [
             LabelConstant::DESCRIPTION => 'Valid Description, Invalid Dates',
+            LabelConstant::LOCATION => 'Valid Location',
             LabelConstant::START_DATE_TIME => $now->format(AppConstant::FORMAT_DATETIME),
             LabelConstant::END_DATE_TIME => $past->format(AppConstant::FORMAT_DATETIME),
             LabelConstant::USERS => [],
@@ -120,6 +123,7 @@ class EventControllerTest extends WebTestCase
 
         $parameters = [
             LabelConstant::DESCRIPTION => 'Valid Description, Valid Dates',
+            LabelConstant::LOCATION => 'Valid Location',
             LabelConstant::START_DATE_TIME => $now->format(AppConstant::FORMAT_DATETIME),
             LabelConstant::END_DATE_TIME => $future->format(AppConstant::FORMAT_DATETIME),
             LabelConstant::USERS => [],
@@ -170,6 +174,7 @@ class EventControllerTest extends WebTestCase
             EventConstant::UPDATE_VALIDATION_ERROR,
             [
                 EventConstant::DESCRIPTION_EMPTY_ERROR,
+                EventConstant::LOCATION_EMPTY_ERROR,
                 EventConstant::START_EMPTY_ERROR,
                 EventConstant::END_EMPTY_ERROR,
             ]
@@ -193,6 +198,7 @@ class EventControllerTest extends WebTestCase
         $event = new Event();
         $event
             ->setDescription('Testing System User')
+            ->setLocation('Testing Location')
             ->setStartDateTime(new \DateTime())
             ->setEndDateTime(new \DateTime())
             ->setCreatedBy($systemUser);
@@ -229,6 +235,7 @@ class EventControllerTest extends WebTestCase
         $event = new Event();
         $event
             ->setDescription('Testing Valid Event')
+            ->setLocation('Testing Location')
             ->setStartDateTime(new \DateTime())
             ->setEndDateTime(new \DateTime())
             ->setCreatedBy($adminUser);
@@ -242,6 +249,7 @@ class EventControllerTest extends WebTestCase
 
         $parameters = [
             LabelConstant::DESCRIPTION => 'Testing Update',
+            LabelConstant::LOCATION => 'Testing Location Update',
             LabelConstant::START_DATE_TIME => $now->format('Y-m-d H:i:s'),
             LabelConstant::END_DATE_TIME => $future->format('Y-m-d H:i:s'),
         ];
@@ -275,6 +283,7 @@ class EventControllerTest extends WebTestCase
         $event = new Event();
         $event
             ->setDescription('Testing Delete Event')
+            ->setLocation('Testing Location')
             ->setStartDateTime(new \DateTime())
             ->setEndDateTime(new \DateTime())
             ->setCreatedBy($adminUser);
