@@ -50,6 +50,27 @@ class EventController extends ApiController
     }
 
     /**
+     * @Rest\Get("/my/events/upcoming.{_format}", defaults={"_format"="json"})
+     * @Security("has_role('ROLE_USER')", message=EVENT_GET_EVENTS_SECURITY_ERROR)
+     * @return View
+     */
+    public function getUpcomingEvents(): View
+    {
+        $this->authenticatedUser = $this->getUser();
+        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        /** @var EventRepository $eventRepository */
+        $eventRepository = $this->entityManager->getRepository(EntityConstant::EVENT);
+
+        $events = $eventRepository->getUpcomingEvents($this->authenticatedUser);
+
+        $data = ResponseHelper::buildSuccessResponse(200, $events);
+
+        ResponseHelper::logResponse(EventConstant::GET_MULTIPLE_SUCCESS_MESSAGE, $data, $this);
+
+        return $this->view($data, $data['code']);
+    }
+
+    /**
      * @Rest\Post("/my/event.{_format}", defaults={"_format"="json"})
      * @Security("has_role('ROLE_USER')", message=EVENT_CREATE_EVENT_SECURITY_ERROR)
      * @param Request $request

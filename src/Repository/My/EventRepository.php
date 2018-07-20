@@ -24,18 +24,38 @@ class EventRepository extends ServiceEntityRepository
 
     /**
      * @param User $user
-     * @return array
+     * @return Event[]
      */
     public function getEvents(User $user): array
     {
         $query = $this->createQueryBuilder('e')
             ->where('e.createdBy = :createdUserId')
-            ->orWhere('e.createdBy = :participantUserId')
+            ->andWhere('e.endDateTime >= :now')
+            ->setParameter('createdUserId', $user->getId())
+            ->setParameter('now', new \DateTime())
+            ->orderBy('e.startDateTime', 'ASC')
+            ->addOrderBy('e.endDateTime', 'ASC')
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    /**
+     * @param User $user
+     * @return array
+     */
+    public function getUpcomingEvents(User $user): array
+    {
+        $query = $this->createQueryBuilder('e')
+            ->leftJoin('e.users', 'u')
+            ->where('e.createdBy = :createdUserId')
+            ->orWhere('u.id = :participantUserId')
             ->andWhere('e.endDateTime >= :now')
             ->setParameter('createdUserId', $user->getId())
             ->setParameter('participantUserId', $user->getId())
             ->setParameter('now', new \DateTime())
-            ->orderBy('e.endDateTime', 'ASC')
+            ->orderBy('e.startDateTime', 'ASC')
+            ->addOrderBy('e.endDateTime', 'ASC')
             ->getQuery();
 
         return $query->getResult();

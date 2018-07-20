@@ -30,6 +30,19 @@ class EventControllerTest extends WebTestCase
         );
     }
 
+    public function testGetUpcomingEvents(): void
+    {
+        $url = '/api/my/events/upcoming.'.self::TYPE;
+        $this->client->request('GET', $url, [], [], $this->getJsonHeaders());
+        $this->doHeaderTests(Response::HTTP_OK);
+
+        $content = $this->getResponseContent();
+        $this->assertTrue(
+            $content->status,
+            'Failed to get a list of Upcoming Events'
+        );
+    }
+
     public function testCreateInvalidEventDescription(): void
     {
         $url = self::API_URL_SINGLE.'.'.self::TYPE;
