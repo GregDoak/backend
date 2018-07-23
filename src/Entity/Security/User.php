@@ -484,6 +484,18 @@ class User implements UserInterface //NOSONAR
     }
 
     /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        $userRoles = $this->getRoles();
+
+        return
+            \in_array('ROLE_ADMIN', $userRoles, true) ||
+            \in_array('ROLE_SUPER_ADMIN', $userRoles, true);
+    }
+
+    /**
      * @return array
      */
     public function getRoles(): array
