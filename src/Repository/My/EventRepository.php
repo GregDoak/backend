@@ -31,8 +31,10 @@ class EventRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('e')
             ->where('e.createdBy = :createdUserId')
             ->andWhere('e.endDateTime >= :now')
+            ->andWhere('e.active = :active')
             ->setParameter('createdUserId', $user->getId())
             ->setParameter('now', new \DateTime())
+            ->setParameter('active', true)
             ->orderBy('e.startDateTime', 'ASC')
             ->addOrderBy('e.endDateTime', 'ASC')
             ->getQuery();
@@ -51,9 +53,11 @@ class EventRepository extends ServiceEntityRepository
             ->where('e.createdBy = :createdUserId')
             ->orWhere('u.id = :participantUserId')
             ->andWhere('e.endDateTime >= :now')
+            ->andWhere('e.active = :active')
             ->setParameter('createdUserId', $user->getId())
             ->setParameter('participantUserId', $user->getId())
             ->setParameter('now', new \DateTime())
+            ->setParameter('active', true)
             ->orderBy('e.startDateTime', 'ASC')
             ->addOrderBy('e.endDateTime', 'ASC')
             ->getQuery();
