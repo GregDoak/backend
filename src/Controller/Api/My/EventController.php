@@ -71,6 +71,25 @@ class EventController extends ApiController
     }
 
     /**
+     * @Rest\Get("/my/event/{id}.{_format}", defaults={"_format"="json"})
+     * @Security("has_role('ROLE_ADMIN')",message=EVENT_GET_EVENT_SECURITY_ERROR)
+     * @ParamConverter("event", class="App\Entity\My\Event", options={"id" = "id"})
+     * @param Event $event
+     * @throws \LogicException
+     * @return View
+     */
+    public function getEvent(Event $event): View
+    {
+        $this->authenticatedUser = $this->getUser();
+
+        $data = ResponseHelper::buildSuccessResponse(200, $event);
+
+        ResponseHelper::logResponse(EventConstant::GET_SINGLE_SUCCESS_MESSAGE, $data, $this);
+
+        return $this->view($data, $data['code']);
+    }
+
+    /**
      * @Rest\Post("/my/event.{_format}", defaults={"_format"="json"})
      * @Security("has_role('ROLE_USER')", message=EVENT_CREATE_EVENT_SECURITY_ERROR)
      * @param Request $request

@@ -43,6 +43,43 @@ class EventControllerTest extends WebTestCase
         );
     }
 
+    /**
+     * @throws NoResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetEvent(): void
+    {
+        $userRepository = $this->entityManager->getRepository(EntityConstant::USER);
+        $adminUser = $userRepository->findOneBy(['username' => getenv('APP_DEFAULT_USERNAME')]);
+
+        if ( ! $adminUser instanceof User) {
+            throw new NoResultException();
+        }
+
+        $event = new Event();
+        $event
+            ->setDescription('Testing Get Event')
+            ->setLocation('Testing Location')
+            ->setStartDateTime(new \DateTime())
+            ->setEndDateTime(new \DateTime())
+            ->setCreatedBy($adminUser);
+
+        $this->entityManager->persist($event);
+        $this->entityManager->flush();
+
+        $url = self::API_URL_SINGLE.'/'.$event->getId().'.'.self::TYPE;
+
+        $this->client->request('GET', $url, [], [], $this->getJsonHeaders());
+        $this->doHeaderTests(Response::HTTP_OK);
+
+        $content = $this->getResponseContent();
+        $this->assertTrue(
+            $content->status,
+            'Failed to get Event'
+        );
+    }
+
     public function testCreateInvalidEventDescription(): void
     {
         $url = self::API_URL_SINGLE.'.'.self::TYPE;

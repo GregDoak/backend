@@ -1,2 +1,2 @@
 data_dog_audit:
-    audited_entities: [ 'App\Entity\Security\Role', 'App\Entity\Security\Group' ]
+    audited_entities: [ 'App\Entity\Security\Role', 'App\Entity\Security\Group', 'App\Entity\Security\User', 'App\Entity\My\Event' ]

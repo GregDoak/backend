@@ -12,6 +12,7 @@ class EventConstant
 {
     //Constants for Annotations in App\Controller\Api\My\EventController
     public const GET_EVENTS_SECURITY_ERROR = 'You must be logged in and authorised to view events.';
+    public const GET_EVENT_SECURITY_ERROR = 'You must be logged in and authorised to view this event.';
     public const CREATE_EVENT_SECURITY_ERROR = 'You must be logged in and authorised to create events.';
     public const DESCRIPTION_EMPTY_ERROR = 'The description is a required field and cannot be empty.';
     public const DESCRIPTION_MIN_LENGTH_ERROR = 'The description must be at least {{ limit }} characters long.';
@@ -28,6 +29,7 @@ class EventConstant
 
     //Constants for Messages in App\Controller\Api\My\EventController
     public const GET_MULTIPLE_SUCCESS_MESSAGE = 'User received a list of all events.';
+    public const GET_SINGLE_SUCCESS_MESSAGE = 'User received an event.';
     public const CREATE_VALIDATION_ERROR = 'Sorry, unable to create the event, please note the errors below:';
     public const CREATE_SUCCESS_MESSAGE = 'Successfully created your event.';
     public const CREATE_SUCCESS_LOG = 'User created a new event.';
@@ -44,6 +46,7 @@ class EventConstant
     {
         //Constants for Annotations in App\Controller\Api\My\EventController
         AppConstant::defineConstant('EVENT_GET_EVENTS_SECURITY_ERROR', self::GET_EVENTS_SECURITY_ERROR);
+        AppConstant::defineConstant('EVENT_GET_EVENT_SECURITY_ERROR', self::GET_EVENT_SECURITY_ERROR);
         AppConstant::defineConstant('EVENT_DESCRIPTION_EMPTY_ERROR', self::DESCRIPTION_EMPTY_ERROR);
         AppConstant::defineConstant('EVENT_DESCRIPTION_MIN_LENGTH_ERROR', self::DESCRIPTION_MIN_LENGTH_ERROR);
         AppConstant::defineConstant('EVENT_DESCRIPTION_MAX_LENGTH_ERROR', self::DESCRIPTION_MAX_LENGTH_ERROR);
