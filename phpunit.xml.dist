@@ -12,6 +12,7 @@
         <env name="KERNEL_CLASS" value="App\Kernel"/>
         <env name="APP_DEBUG" value="1"/>
         <env name="SHELL_VERBOSITY" value="-1"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors"/>
 
         <env name="APP_DEFAULT_USERNAME" value="admin"/>
         <env name="APP_DEFAULT_PASSWORD" value="ChangeThisPassword"/>
@@ -24,8 +25,8 @@
 
         <!-- ###+ lexik/jwt-authentication-bundle ### -->
         <!-- Key paths should be relative to the project directory -->
-        <env name="JWT_PRIVATE_KEY_PATH" value="var/jwt/private.pem"/>
-        <env name="JWT_PUBLIC_KEY_PATH" value="var/jwt/public.pem"/>
+        <env name="JWT_SECRET_KEY" value="var/jwt/private.pem"/>
+        <env name="JWT_PUBLIC_KEY" value="var/jwt/public.pem"/>
         <env name="JWT_PASSPHRASE" value="JWT_PASSPHRASE"/>
         <!-- ###- lexik/jwt-authentication-bundle ### -->
 
