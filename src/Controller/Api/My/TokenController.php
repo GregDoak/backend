@@ -23,13 +23,13 @@ class TokenController extends ApiController
 
     /**
      * @Rest\Get("/my/tokens.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=TOKEN_GET_TOKENS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=TOKEN_GET_TOKENS_SECURITY_ERROR)
      * @return View
      */
     public function getTokens(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $tokenRepository = $this->entityManager->getRepository(EntityConstant::JWT_REFRESH_TOKEN);
 
         $tokens = $tokenRepository->getTokens($this->authenticatedUser->getUsername());
@@ -43,7 +43,7 @@ class TokenController extends ApiController
 
     /**
      * @Rest\Delete("/my/tokens.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=TOKEN_DELETE_TOKENS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=TOKEN_DELETE_TOKENS_SECURITY_ERROR)
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws ORMException
      * @return View
@@ -51,7 +51,7 @@ class TokenController extends ApiController
     public function deleteTokens(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $queryBuilder
@@ -78,7 +78,7 @@ class TokenController extends ApiController
 
     /**
      * @Rest\Delete("/my/token/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=TOKEN_DELETE_TOKEN_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=TOKEN_DELETE_TOKEN_SECURITY_ERROR)
      * @ParamConverter("jwtRefreshToken", class="App\Entity\Security\JwtRefreshToken", options={"id" = "id"})
      * @param JwtRefreshToken $jwtRefreshToken
      * @throws ORMException
@@ -87,7 +87,7 @@ class TokenController extends ApiController
     public function deleteToken(JwtRefreshToken $jwtRefreshToken): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         if ($jwtRefreshToken->getUsername() !== $this->authenticatedUser->getUsername()) {
             throw new AccessDeniedHttpException(TokenConstant::DELETE_TOKEN_SECURITY_ERROR);

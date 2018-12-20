@@ -35,14 +35,14 @@ class UserController extends ApiController
 
     /**
      * @Rest\Get("/admin/users.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=USER_GET_USERS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=USER_GET_USERS_SECURITY_ERROR)
      * @throws \LogicException
      * @return View
      */
     public function getUsers(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $this->userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         $users = $this->userRepository->getUsers();
@@ -56,7 +56,7 @@ class UserController extends ApiController
 
     /**
      * @Rest\Get("/admin/user/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')",message=USER_GET_USER_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')",message=USER_GET_USER_SECURITY_ERROR)
      * @ParamConverter("user", class="App\Entity\Security\User", options={"id" = "id"})
      * @param User $user
      * @throws \LogicException
@@ -65,7 +65,7 @@ class UserController extends ApiController
     public function getSingleUser(User $user): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $this->userRepository = $this->entityManager->getRepository(EntityConstant::USER);
 
         $data = ResponseHelper::buildSuccessResponse(200, $user);
@@ -81,7 +81,7 @@ class UserController extends ApiController
 
     /**
      * @Rest\Post("/admin/user.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=USER_CREATE_USER_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=USER_CREATE_USER_SECURITY_ERROR)
      * @param Request $request
      * @throws \LogicException
      * @throws ORMException
@@ -92,7 +92,7 @@ class UserController extends ApiController
     public function createUser(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $encoder = $this->get('security.password_encoder');
 
         try {
@@ -143,7 +143,7 @@ class UserController extends ApiController
 
     /**
      * @Rest\Put("/admin/user/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=USER_UPDATE_USER_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=USER_UPDATE_USER_SECURITY_ERROR)
      * @ParamConverter("user", class="App\Entity\Security\User", options={"id" = "id"})
      * @param Request $request
      * @param User $user
@@ -156,7 +156,7 @@ class UserController extends ApiController
     public function updateUser(Request $request, User $user): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $sourceUser = clone $user;
 
         try {
@@ -209,7 +209,7 @@ class UserController extends ApiController
 
     /**
      * @Rest\Delete("/admin/user/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=USER_DELETE_USER_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=USER_DELETE_USER_SECURITY_ERROR)
      * @ParamConverter("user", class="App\Entity\Security\User", options={"id" = "id"})
      * @param User $user
      * @throws \LogicException
@@ -221,7 +221,7 @@ class UserController extends ApiController
     public function deleteUser(User $user): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $this->entityManager->remove($user);
         $this->entityManager->flush();

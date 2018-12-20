@@ -4,7 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Security\User;
 use App\Exception\ValidationException;
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * Class ApiController
  * @package App\Controller\Api
  */
-class ApiController extends FOSRestController
+class ApiController extends AbstractFOSRestController
 {
     /** @var User $authenticatedUser */
     public $authenticatedUser;

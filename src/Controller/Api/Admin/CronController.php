@@ -27,14 +27,14 @@ class CronController extends ApiController
 
     /**
      * @Rest\Get("/admin/cron-jobs.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=CRON_GET_CRON_JOBS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=CRON_GET_CRON_JOBS_SECURITY_ERROR)
      * @throws \LogicException
      * @return View
      */
     public function getCronJobs(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $cronJobRepository = $this->entityManager->getRepository(EntityConstant::CRON_JOB);
 
         $cronJobs = $cronJobRepository->getCronJobHistory();
@@ -48,7 +48,7 @@ class CronController extends ApiController
 
     /**
      * @Rest\Get("/admin/cron-job/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')",message=CRON_GET_CRON_JOB_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')",message=CRON_GET_CRON_JOB_SECURITY_ERROR)
      * @ParamConverter("cronJob", class="GregDoak\CronBundle\Entity\CronJob", options={"id" = "id"})
      * @param CronJob $cronJob
      * @throws \LogicException
@@ -57,7 +57,7 @@ class CronController extends ApiController
     public function getCronJob(CronJob $cronJob): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $data = ResponseHelper::buildSuccessResponse(200, $cronJob);
 
@@ -72,14 +72,14 @@ class CronController extends ApiController
 
     /**
      * @Rest\Get("/admin/cron-job-tasks.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=CRON_GET_CRON_JOB_TASKS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=CRON_GET_CRON_JOB_TASKS_SECURITY_ERROR)
      * @throws \LogicException
      * @return View
      */
     public function getCronJobTasks(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $cronJobTaskRepository = $this->entityManager->getRepository(EntityConstant::CRON_JOB_TASK);
 
         $cronJobTasks = $cronJobTaskRepository->findAll();
@@ -93,7 +93,7 @@ class CronController extends ApiController
 
     /**
      * @Rest\Get("/admin/cron-job-task/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')",message=CRON_GET_CRON_JOB_TASK_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')",message=CRON_GET_CRON_JOB_TASK_SECURITY_ERROR)
      * @ParamConverter("cronJobTask", class="GregDoak\CronBundle\Entity\CronJobTask", options={"id" = "id"})
      * @param CronJobTask $cronJobTask
      * @throws \LogicException
@@ -102,7 +102,7 @@ class CronController extends ApiController
     public function getCronJobTask(CronJobTask $cronJobTask): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $data = ResponseHelper::buildSuccessResponse(200, $cronJobTask);
 
@@ -117,7 +117,7 @@ class CronController extends ApiController
 
     /**
      * @Rest\Post("/admin/cron-job-task.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=CRON_CREATE_CRON_JOB_TASK_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=CRON_CREATE_CRON_JOB_TASK_SECURITY_ERROR)
      * @param Request $request
      * @throws \LogicException
      * @throws ORMException
@@ -127,7 +127,7 @@ class CronController extends ApiController
     public function createCronJobTask(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         try {
             $startDate = \DateTime::createFromFormat(AppConstant::FORMAT_DATETIME,
@@ -200,7 +200,7 @@ class CronController extends ApiController
 
     /**
      * @Rest\Put("/admin/cron-job-task/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=CRON_UPDATE_CRON_JOB_TASK_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=CRON_UPDATE_CRON_JOB_TASK_SECURITY_ERROR)
      * @ParamConverter("cronJobTask", class="GregDoak\CronBundle\Entity\CronJobTask", options={"id" = "id"})
      * @param Request $request
      * @param CronJobTask $cronJobTask
@@ -212,7 +212,7 @@ class CronController extends ApiController
     public function updateCronJobTask(Request $request, CronJobTask $cronJobTask): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $sourceCronJobTask = clone $cronJobTask;
 
         try {

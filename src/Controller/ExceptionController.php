@@ -6,7 +6,7 @@ use App\Constant\AppConstant;
 use App\Entity\Security\User;
 use App\Helper\ResponseHelper;
 use Doctrine\ORM\ORMException;
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\View\View;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Class ExceptionController
  * @package App\Controller
  */
-class ExceptionController extends FOSRestController
+class ExceptionController extends AbstractFOSRestController
 {
     private $code;
     private $logger;

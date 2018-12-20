@@ -26,14 +26,14 @@ class AuditController extends ApiController
 
     /**
      * @Rest\Get("/admin/audit-logs.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=AUDIT_GET_AUDIT_LOGS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=AUDIT_GET_AUDIT_LOGS_SECURITY_ERROR)
      * @throws \LogicException
      * @return View
      */
     public function getAuditLogs(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $auditLogRepository = $this->entityManager->getRepository(EntityConstant::AUDIT_LOG);
 
         $auditLogs = $auditLogRepository->findBy([], [LabelConstant::ID => 'DESC']);
@@ -54,7 +54,7 @@ class AuditController extends ApiController
                         $this->entityManager,
                         $auditLog->getBlame()
                     ) : null,
-                    LabelConstant::CHANGES => \count($auditLog->getDiff()),
+                    LabelConstant::CHANGES => \is_array($auditLog->getDiff()) ? \count($auditLog->getDiff()) : 1,
                     LabelConstant::UPDATED_ON => $auditLog->getLoggedAt(),
                 ];
 
@@ -74,7 +74,7 @@ class AuditController extends ApiController
 
     /**
      * @Rest\Get("/admin/audit-log/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=AUDIT_GET_AUDIT_LOG_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=AUDIT_GET_AUDIT_LOG_SECURITY_ERROR)
      * @ParamConverter("auditLog", class="DataDog\AuditBundle\Entity\AuditLog", options={"id" = "id"})
      * @param AuditLog $auditLog
      * @throws \LogicException
@@ -83,7 +83,7 @@ class AuditController extends ApiController
     public function getAuditLog(AuditLog $auditLog): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get('doctrine.orm.entity_manager');
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $simpleAuditLog = [
             LabelConstant::ID => $auditLog->getId(),

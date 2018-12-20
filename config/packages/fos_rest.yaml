@@ -1,5 +1,4 @@
 fos_rest:
-    body_listener: true
     exception:
         enabled: true
         exception_controller: App\Controller\ExceptionController::exception
@@ -9,7 +8,7 @@ fos_rest:
             priorities: ['json', 'xml']
             fallback_format: 'json'
             prefer_extension: true
-    param_fetcher_listener:  true
+    param_fetcher_listener:  force
     routing_loader:
         default_format: json
     view:

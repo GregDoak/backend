@@ -17,7 +17,7 @@ class ProfileController extends ApiController
 {
     /**
      * @Rest\Get("/my/account.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=PROFILE_GET_ACCOUNT_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=PROFILE_GET_ACCOUNT_SECURITY_ERROR)
      * @return View
      */
     public function getAccount(): View

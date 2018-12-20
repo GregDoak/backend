@@ -30,13 +30,13 @@ class EventController extends ApiController
 
     /**
      * @Rest\Get("/my/events.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=EVENT_GET_EVENTS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=EVENT_GET_EVENTS_SECURITY_ERROR)
      * @return View
      */
     public function getEvents(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         /** @var EventRepository $eventRepository */
         $eventRepository = $this->entityManager->getRepository(EntityConstant::EVENT);
 
@@ -51,13 +51,13 @@ class EventController extends ApiController
 
     /**
      * @Rest\Get("/my/events/upcoming.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=EVENT_GET_EVENTS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=EVENT_GET_EVENTS_SECURITY_ERROR)
      * @return View
      */
     public function getUpcomingEvents(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         /** @var EventRepository $eventRepository */
         $eventRepository = $this->entityManager->getRepository(EntityConstant::EVENT);
 
@@ -72,7 +72,7 @@ class EventController extends ApiController
 
     /**
      * @Rest\Get("/my/event/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')",message=EVENT_GET_EVENT_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')",message=EVENT_GET_EVENT_SECURITY_ERROR)
      * @ParamConverter("event", class="App\Entity\My\Event", options={"id" = "id"})
      * @param Event $event
      * @throws \LogicException
@@ -91,7 +91,7 @@ class EventController extends ApiController
 
     /**
      * @Rest\Post("/my/event.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=EVENT_CREATE_EVENT_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=EVENT_CREATE_EVENT_SECURITY_ERROR)
      * @param Request $request
      * @throws \LogicException
      * @throws ORMException
@@ -102,7 +102,7 @@ class EventController extends ApiController
     public function createEvent(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         try {
             $event = new Event();
@@ -141,7 +141,7 @@ class EventController extends ApiController
 
     /**
      * @Rest\Put("/my/event/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER') && event.isCreator(user)", message=EVENT_UPDATE_EVENT_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER') && event.isCreator(user)", message=EVENT_UPDATE_EVENT_SECURITY_ERROR)
      * @ParamConverter("user", class="App\Entity\My\Event", options={"id" = "id"})
      * @param Request $request
      * @param Event $event
@@ -154,7 +154,7 @@ class EventController extends ApiController
     public function updateEvent(Request $request, Event $event): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         try {
             $event
@@ -194,7 +194,7 @@ class EventController extends ApiController
 
     /**
      * @Rest\Delete("/my/event/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER') && event.isCreator(user)", message=EVENT_DELETE_EVENT_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER') && event.isCreator(user)", message=EVENT_DELETE_EVENT_SECURITY_ERROR)
      * @ParamConverter("user", class="App\Entity\My\Event", options={"id" = "id"})
      * @param Event $event
      * @throws \LogicException
@@ -206,7 +206,7 @@ class EventController extends ApiController
     public function deleteEvent(Event $event): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $event
             ->setActive(false)

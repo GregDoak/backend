@@ -19,13 +19,13 @@ class UserController extends ApiController
 
     /**
      * @Rest\Get("/my/similar-access-users.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=USER_GET_USERS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=USER_GET_USERS_SECURITY_ERROR)
      * @return View
      */
     public function getSimilarAccessUsers(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         /** @var UserRepository $eventRepository */
         $eventRepository = $this->entityManager->getRepository(EntityConstant::USER);
 

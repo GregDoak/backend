@@ -35,14 +35,14 @@ class GroupController extends ApiController
 
     /**
      * @Rest\Get("/admin/groups.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=GROUP_GET_GROUPS_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=GROUP_GET_GROUPS_SECURITY_ERROR)
      * @throws \LogicException
      * @return View
      */
     public function getGroups(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $this->groupRepository = $this->entityManager->getRepository(EntityConstant::GROUP);
 
         $groups = $this->groupRepository->getGroups();
@@ -56,7 +56,7 @@ class GroupController extends ApiController
 
     /**
      * @Rest\Get("/admin/group/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')",message=GROUP_GET_GROUP_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')",message=GROUP_GET_GROUP_SECURITY_ERROR)
      * @ParamConverter("group", class="App\Entity\Security\Group", options={"id" = "id"})
      * @param Group $group
      * @throws \LogicException
@@ -65,7 +65,7 @@ class GroupController extends ApiController
     public function getGroup(Group $group): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $this->groupRepository = $this->entityManager->getRepository(EntityConstant::GROUP);
 
         $data = ResponseHelper::buildSuccessResponse(200, $group);
@@ -81,7 +81,7 @@ class GroupController extends ApiController
 
     /**
      * @Rest\Post("/admin/group.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=GROUP_CREATE_GROUP_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=GROUP_CREATE_GROUP_SECURITY_ERROR)
      * @param Request $request
      * @throws \LogicException
      * @throws ORMException
@@ -92,7 +92,7 @@ class GroupController extends ApiController
     public function createGroup(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         try {
             $group = new Group();
@@ -137,7 +137,7 @@ class GroupController extends ApiController
 
     /**
      * @Rest\Put("/admin/group/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=GROUP_UPDATE_GROUP_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=GROUP_UPDATE_GROUP_SECURITY_ERROR)
      * @ParamConverter("group", class="App\Entity\Security\Group", options={"id" = "id"})
      * @param Request $request
      * @param Group $group
@@ -150,7 +150,7 @@ class GroupController extends ApiController
     public function updateGroup(Request $request, Group $group): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $sourceGroup = clone $group;
 
         try {
@@ -200,7 +200,7 @@ class GroupController extends ApiController
 
     /**
      * @Rest\Delete("/admin/group/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=GROUP_DELETE_GROUP_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=GROUP_DELETE_GROUP_SECURITY_ERROR)
      * @ParamConverter("group", class="App\Entity\Security\Group", options={"id" = "id"})
      * @param Group $group
      * @throws \LogicException
@@ -212,7 +212,7 @@ class GroupController extends ApiController
     public function deleteGroup(Group $group): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $this->entityManager->remove($group);
         $this->entityManager->flush();

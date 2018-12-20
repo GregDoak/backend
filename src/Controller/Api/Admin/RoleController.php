@@ -34,14 +34,14 @@ class RoleController extends ApiController
 
     /**
      * @Rest\Get("/admin/roles.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=ROLE_GET_ROLES_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=ROLE_GET_ROLES_SECURITY_ERROR)
      * @throws \LogicException
      * @return View
      */
     public function getRoles(): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $this->roleRepository = $this->entityManager->getRepository(EntityConstant::ROLE);
 
         $roles = $this->roleRepository->getRoles();
@@ -55,7 +55,7 @@ class RoleController extends ApiController
 
     /**
      * @Rest\Get("/admin/role/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')",message=ROLE_GET_ROLE_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')",message=ROLE_GET_ROLE_SECURITY_ERROR)
      * @ParamConverter("role", class="App\Entity\Security\Role", options={"id" = "id"})
      * @param Role $role
      * @throws \LogicException
@@ -64,7 +64,7 @@ class RoleController extends ApiController
     public function getRole(Role $role): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $this->roleRepository = $this->entityManager->getRepository(EntityConstant::ROLE);
 
         $data = ResponseHelper::buildSuccessResponse(200, $role);
@@ -76,7 +76,7 @@ class RoleController extends ApiController
 
     /**
      * @Rest\Post("/admin/role.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=ROLE_CREATE_ROLE_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=ROLE_CREATE_ROLE_SECURITY_ERROR)
      * @param Request $request
      * @throws \LogicException
      * @throws ORMException
@@ -87,7 +87,7 @@ class RoleController extends ApiController
     public function createRole(Request $request): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         try {
             $role = new Role();
@@ -130,7 +130,7 @@ class RoleController extends ApiController
 
     /**
      * @Rest\Put("/admin/role/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=ROLE_UPDATE_ROLE_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=ROLE_UPDATE_ROLE_SECURITY_ERROR)
      * @ParamConverter("role", class="App\Entity\Security\Role", options={"id" = "id"})
      * @param Request $request
      * @param Role $role
@@ -143,7 +143,7 @@ class RoleController extends ApiController
     public function updateRole(Request $request, Role $role): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
         $sourceRole = clone $role;
 
         try {
@@ -187,7 +187,7 @@ class RoleController extends ApiController
 
     /**
      * @Rest\Delete("/admin/role/{id}.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_ADMIN')", message=ROLE_DELETE_ROLE_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_ADMIN')", message=ROLE_DELETE_ROLE_SECURITY_ERROR)
      * @ParamConverter("role", class="App\Entity\Security\Role", options={"id" = "id"})
      * @param Role $role
      * @throws \LogicException
@@ -199,7 +199,7 @@ class RoleController extends ApiController
     public function deleteRole(Role $role): View
     {
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         $this->entityManager->remove($role);
         $this->entityManager->flush();

@@ -27,7 +27,7 @@ class PasswordController extends ApiController
 
     /**
      * @Rest\Put("/my/password.{_format}", defaults={"_format"="json"})
-     * @Security("has_role('ROLE_USER')", message=PASSWORD_UPDATE_PASSWORD_SECURITY_ERROR)
+     * @Security("is_granted('ROLE_USER')", message=PASSWORD_UPDATE_PASSWORD_SECURITY_ERROR)
      * @param Request $request
      * @throws ORMException
      * @return View
@@ -36,7 +36,7 @@ class PasswordController extends ApiController
     {
         $encoder = $this->get('security.password_encoder');
         $this->authenticatedUser = $this->getUser();
-        $this->entityManager = $this->get(EntityConstant::ENTITY_MANAGER);
+        $this->entityManager = $this->getDoctrine()->getManager();
 
         try {
 
