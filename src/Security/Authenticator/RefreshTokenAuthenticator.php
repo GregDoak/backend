@@ -5,6 +5,7 @@ namespace App\Security\Authenticator;
 use App\Constant\Security\AuthenticationConstant;
 use App\Security\Provider\RefreshTokenProvider;
 use Gesdinet\JWTRefreshTokenBundle\Request\RequestRefreshToken;
+use Gesdinet\JWTRefreshTokenBundle\Security\Authenticator\RefreshTokenAuthenticatorBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
@@ -12,13 +13,12 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
-use Symfony\Component\Security\Http\Authentication\SimplePreAuthenticatorInterface;
 
 /**
  * Class RefreshTokenAuthenticator
  * @package App\Security\Authenticator
  */
-class RefreshTokenAuthenticator implements AuthenticationFailureHandlerInterface, SimplePreAuthenticatorInterface
+class RefreshTokenAuthenticator extends RefreshTokenAuthenticatorBase implements AuthenticationFailureHandlerInterface
 {
     /**
      * @param Request $request
@@ -73,7 +73,7 @@ class RefreshTokenAuthenticator implements AuthenticationFailureHandlerInterface
             $user,
             $refreshToken,
             $providerKey,
-            $user->getRoles()
+            $user->getRoleNames()
         );
     }
 

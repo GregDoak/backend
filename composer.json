@@ -12,7 +12,7 @@
     "lexik/jwt-authentication-bundle": "^2.4",
     "nelmio/cors-bundle": "^1.5",
     "sensio/framework-extra-bundle": "5.1.0",
-    "sensiolabs/security-checker": "^4.1",
+    "sensiolabs/security-checker": "^5.0",
     "symfony/cache": "^4.2",
     "symfony/console": "^4.2",
     "symfony/expression-language": "^4.2",
@@ -21,7 +21,6 @@
     "symfony/framework-bundle": "^4.2",
     "symfony/monolog-bundle": "^3.1",
     "symfony/orm-pack": "^1.0",
-    "symfony/security-bundle": "^4.2",
     "symfony/translation": "^4.2",
     "symfony/validator": "^4.2",
     "symfony/yaml": "^4.2",
@@ -61,6 +60,7 @@
     "auto-scripts": {
       "cache:clear": "symfony-cmd",
       "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
+      "assets:install %PUBLIC_DIR%": "symfony-cmd",
       "security-checker security:check": "script"
     },
     "generate-environment-files": [

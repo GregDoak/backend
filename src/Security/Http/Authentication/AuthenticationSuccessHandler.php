@@ -54,7 +54,7 @@ class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterf
         $response = new JsonResponse();
         $event = new AuthenticationSuccessEvent(['token' => $jwt], $user, $response);
 
-        $this->dispatcher->dispatch(Events::AUTHENTICATION_SUCCESS, $event);
+        $this->dispatcher->dispatch($event, Events::AUTHENTICATION_SUCCESS);
         try {
 
             $userRepository = $this->entityManager->getRepository('App:Security\User');
